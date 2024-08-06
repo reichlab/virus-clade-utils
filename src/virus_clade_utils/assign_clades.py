@@ -94,7 +94,7 @@ def merge_metadata(config: Config) -> pl.DataFrame:
     # duplicate Accession values?
     assert df_metadata["Accession"].n_unique() == df_metadata.shape[0]
 
-    df_assignments = pl.read_csv(config.assignment_no_metadata_file, separator=";")
+    df_assignments = pl.read_csv(config.assignment_no_metadata_file, separator=";", infer_schema_length=5000)
     df_assignments = parse_sequence_assignments(df_assignments)
 
     joined = df_metadata.join(df_assignments, left_on="Accession", right_on="seq", how="left")
