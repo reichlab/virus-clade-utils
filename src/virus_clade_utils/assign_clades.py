@@ -118,6 +118,11 @@ def merge_metadata(config: Config) -> pl.DataFrame:
             missing_clade_assignments=missing_clade_assignments,
         )
 
+    # TBD: include only the columns we need
+    # https://github.com/reichlab/virus-clade-utils/issues/11
+    if len(config.assignment_file_columns) > 0:
+        joined = joined.select(config.assignment_file_columns)
+
     return joined
 
 
