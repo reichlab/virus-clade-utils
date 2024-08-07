@@ -69,8 +69,6 @@ def get_sequence_metadata(config: Config):
 def assign_clades(config: Config, nextclade_dataset_path: str):
     """Assign downloaded genbank sequences to a clade."""
 
-    logger.info("Assigning sequences to clades using reference tree")
-
     subprocess.run(
         [
             "nextclade",
@@ -82,6 +80,8 @@ def assign_clades(config: Config, nextclade_dataset_path: str):
             f"{config.assignment_no_metadata_file}",
         ]
     )
+
+    logger.info("Assigned sequences to clades via Nextclade CLI", output_file=config.assignment_no_metadata_file)
 
 
 def merge_metadata(config: Config) -> pl.DataFrame:
