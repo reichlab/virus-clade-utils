@@ -7,7 +7,7 @@
 # Pulling the nextclade image to grab the CLI binary is kind of overkill, but it's
 # an easy way to control the version we're using.
 # TODO: fix up the reference tree/root sequence so we can use a newer version
-FROM nextstrain/nextclade:3.3.1
+FROM nextstrain/nextclade:3.8.2
 
 FROM python:3.12-slim-bookworm
 COPY --from=0 /usr/bin/nextclade /opt/src/virus_clade_utils/bin/

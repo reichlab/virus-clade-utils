@@ -54,7 +54,7 @@ pytz==2024.1
     # via pandas
 pyyaml==6.0.1
     # via awscli
-requests==2.31.0
+requests==2.32.3
     # via virus-clade-utils (pyproject.toml)
 rich==13.7.1
     # via
