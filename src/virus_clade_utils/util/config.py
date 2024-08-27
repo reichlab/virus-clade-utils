@@ -1,4 +1,4 @@
-from dataclasses import InitVar, asdict, dataclass
+from dataclasses import InitVar, asdict, dataclass, field
 from datetime import datetime
 from pprint import pprint
 
@@ -23,6 +23,7 @@ class Config:
     root_sequence_file: AnyPath = None
     assignment_no_metadata_file: AnyPath = None
     assignment_file: AnyPath = None
+    assignment_file_columns: list[str] = field(default_factory=list)
 
     def __post_init__(
         self,
@@ -44,6 +45,20 @@ class Config:
             self.data_path / f"{self.sequence_released_since_date}_clade_assignments_no_metadata.csv"
         )
         self.assignment_file = self.data_path / f"{self.sequence_released_since_date}_clade_assignments.csv"
+        self.assignment_file_columns = [
+            "Accession",
+            "Source database",
+            "Release date",
+            "Update date",
+            "Isolate Collection date",
+            "clade",
+            "clade_nextstrain",
+            "Nextclade_pango",
+            "partiallyAliased",
+            "clade_who",
+            "clade_display",
+            "Virus Pangolin Classification",
+        ]
 
     def __repr__(self):
         return str(pprint(asdict(self)))

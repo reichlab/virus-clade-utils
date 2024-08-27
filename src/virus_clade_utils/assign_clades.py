@@ -1,5 +1,4 @@
 import datetime
-import json
 import os
 import subprocess
 
@@ -8,7 +7,7 @@ import rich_click as click
 import structlog
 
 from virus_clade_utils.util.config import Config
-from virus_clade_utils.util.reference import get_reference_data
+from virus_clade_utils.util.reference import get_nextclade_dataset
 from virus_clade_utils.util.sequence import (
     get_covid_genome_data,
     parse_sequence_assignments,
@@ -67,42 +66,22 @@ def get_sequence_metadata(config: Config):
     logger.info("extracted sequence metadata", metadata_file=config.ncbi_sequence_metadata_file)
 
 
-def save_reference_info(config: Config):
-    """Download a reference tree and save it to a file."""
-
-    reference = get_reference_data(config.nextclade_base_url, config.reference_tree_date)
-
-    with open(config.reference_tree_file, "w") as f:
-        json.dump(reference, f)
-
-    with open(config.root_sequence_file, "w") as f:
-        f.write(reference["root_sequence"])
-
-    logger.info(
-        "Reference data saved",
-        tree_path=str(config.reference_tree_file),
-        root_sequence_path=str(config.root_sequence_file),
-    )
-
-
-def assign_clades(config: Config):
+def assign_clades(config: Config, nextclade_dataset_path: str):
     """Assign downloaded genbank sequences to a clade."""
-
-    logger.info("Assigning sequences to clades using reference tree")
 
     subprocess.run(
         [
             "nextclade",
             "run",
-            "--input-tree",
-            f"{config.reference_tree_file}",
-            "--input-ref",
-            f"{config.root_sequence_file}",
+            f"{config.ncbi_sequence_file}",
+            "--input-dataset",
+            nextclade_dataset_path,
             "--output-csv",
             f"{config.assignment_no_metadata_file}",
-            f"{config.ncbi_sequence_file}",
         ]
     )
+
+    logger.info("Assigned sequences to clades via Nextclade CLI", output_file=config.assignment_no_metadata_file)
 
 
 def merge_metadata(config: Config) -> pl.DataFrame:
@@ -115,7 +94,7 @@ def merge_metadata(config: Config) -> pl.DataFrame:
     # duplicate Accession values?
     assert df_metadata["Accession"].n_unique() == df_metadata.shape[0]
 
-    df_assignments = pl.read_csv(config.assignment_no_metadata_file, separator=";")
+    df_assignments = pl.read_csv(config.assignment_no_metadata_file, separator=";", infer_schema_length=5000)
     df_assignments = parse_sequence_assignments(df_assignments)
 
     joined = df_metadata.join(df_assignments, left_on="Accession", right_on="seq", how="left")
@@ -138,6 +117,11 @@ def merge_metadata(config: Config) -> pl.DataFrame:
             num_sequences=num_sequences,
             missing_clade_assignments=missing_clade_assignments,
         )
+
+    # TBD: include only the columns we need
+    # https://github.com/reichlab/virus-clade-utils/issues/11
+    if len(config.assignment_file_columns) > 0:
+        joined = joined.select(config.assignment_file_columns)
 
     return joined
 
@@ -172,11 +156,10 @@ def main(sequence_released_since_date: datetime.date, reference_tree_date: datet
     logger.info("Starting pipeline", reference_tree_date=reference_tree_date, run_time=config.run_time)
 
     os.makedirs(config.data_path, exist_ok=True)
+    nextclade_dataset_path = get_nextclade_dataset(config.reference_tree_date, config.data_path)
     get_sequences(config)
     get_sequence_metadata(config)
-    save_reference_info(config)
-    assign_clades(config)
-
+    assign_clades(config, nextclade_dataset_path)
     merged_data = merge_metadata(config)
     merged_data.write_csv(config.assignment_file)
 
