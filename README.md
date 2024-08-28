@@ -45,6 +45,24 @@ Use the directions below to run the pipeline in a Docker container.
 
 The clade assignments will now be in the local directory that was mounted to the Docker container via the `-v` flag (in this case, a folder called `data` in the current working directory).
 
+### Running the test suite
+
+To run the test suite in the Docker container (built above):
+
+1. Enter the container's bash shell:
+
+    ```bash
+    docker run --platform linux/amd64 -it --entrypoint bash virus-clade-utils
+    ```
+
+2. Once you're in the shell of the container, run the tests:
+
+    ```bash
+    pytest
+    ```
+
+(or `pytest -k unit` to run only the unit tests)
+
 ## Local Machine Setup
 
 If you'd like to run or develop outside of Docker, this section has the setup instructions.
