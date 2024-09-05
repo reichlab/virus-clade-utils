@@ -1,8 +1,13 @@
 from collections import Counter
+from pathlib import Path
 
 import polars as pl
 import pytest
-from virus_clade_utils.util.sequence import parse_sequence_assignments
+from virus_clade_utils.util.sequence import (
+    filter_covid_genome_metadata,
+    get_covid_genome_metadata,
+    parse_sequence_assignments,
+)
 
 
 @pytest.fixture
@@ -17,6 +22,68 @@ def df_assignments():
             "clade": ["BA.5.2.1", "XX.99.88.77", "howdy"],
         }
     )
+
+
+@pytest.fixture
+def test_file_path() -> Path:
+    """
+    Return path to the unit test files.
+    """
+    test_file_path = Path(__file__).parents[2].joinpath("data")
+    return test_file_path
+
+
+@pytest.mark.parametrize("metadata_file", ["metadata.tsv.zst", "metadata.tsv.xz"])
+def test_get_covid_genome_metadata(test_file_path, metadata_file):
+    metadata_path = test_file_path / metadata_file
+
+    metadata = get_covid_genome_metadata(metadata_path)
+    metadata_cols = set(metadata.collect_schema().names())
+
+    expected_cols = {
+        "date",
+        "host",
+        "country",
+        "division",
+        "clade_nextstrain",
+        "genbank_accession",
+        "genbank_accession_rev",
+    }
+
+    assert expected_cols.issubset(metadata_cols)
+
+
+def test_filter_covid_genome_metadata():
+    test_genome_metadata = {
+        "date": ["2022-01-01", "2022-01-02", "2022-01-03", "2023-12-25", None, "2023-12-27"],
+        "host": ["Homo sapiens", "Homo sapiens", "Homo sapiens", "Narwhals", "Homo sapiens", "Homo sapiens"],
+        "country": ["USA", "Argentina", "USA", "USA", "USA", "USA"],
+        "division": ["Alaska", "Maine", "Puerto Rico", "Massachusetts", "Utah", "Pennsylvania"],
+        "clade_nextstrain": ["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
+        "location": ["Vulcan", "Reisa", "Bajor", "Deep Space 9", "Earth", "Cardassia"],
+        "genbank_accession": ["A1", "A2", "B1", "B2", "C1", "C2"],
+        "genbank_accession_rev": ["A1.1", "A2.4", "B1.1", "B2.5", "C1.1", "C2.1"],
+        "unwanted_column": [1, 2, 3, 4, 5, 6],
+    }
+
+    lf_metadata = pl.LazyFrame(test_genome_metadata)
+    lf_filtered = filter_covid_genome_metadata(lf_metadata)
+
+    assert len(lf_filtered.collect()) == 2
+
+    actual_schema = lf_filtered.collect_schema()
+    expected_schema = pl.Schema(
+        {
+            "clade": pl.String,
+            "country": pl.String,
+            "date": pl.Date,
+            "location": pl.String,
+            "genbank_accession": pl.String,
+            "genbank_accession_rev": pl.String,
+            "host": pl.String,
+        }
+    )
+    assert actual_schema == expected_schema
 
 
 def test_parse_sequence_assignments(df_assignments):

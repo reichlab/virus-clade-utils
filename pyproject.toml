@@ -1,8 +1,10 @@
 [project]
 name = "virus-clade-utils"
-version = "0.0.1"
+version = "0.1.0"
 description = "Assign clades to viral genome sequences at a point in time."
 authors = [
+    {name = "Evan Ray", email="elray@umass.edu"},
+    {name = "Ben Rogers", email = "bwrogers@umass.edu"},
     {name = "Becky Sweger", email = "rsweger@umass.edu"},
 ]
 
@@ -15,12 +17,13 @@ dependencies = [
     "click",
     "cloudpathlib",
     "pandas",
-    "polars>=0.20.23",
+    "polars>=1.0.0",
     "pyarrow",
     "requests>=2.32.0",
     "rich",
     "rich-click",
     "structlog",
+    "us"
 ]
 
 [project.optional-dependencies]
@@ -42,6 +45,7 @@ build-backend = "setuptools.build_meta"
 tmp_path_retention_policy = "none"
 filterwarnings = [
     "ignore::DeprecationWarning",
+    'ignore:polars found a filename',
 ]
 
 [tool.ruff]
