@@ -18,6 +18,7 @@ class Config:
     ncbi_package_name: str = "ncbi.zip"
     ncbi_sequence_file: AnyPath = None
     ncbi_sequence_metadata_file: AnyPath = None
+    nextstrain_latest_genome_metadata = "https://data.nextstrain.org/files/ncov/open/metadata.tsv.zst"
     nextclade_base_url: str = "https://nextstrain.org/nextclade/sars-cov-2"
     reference_tree_file: AnyPath = None
     root_sequence_file: AnyPath = None

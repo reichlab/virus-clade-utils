@@ -2,7 +2,7 @@
 **/.DS_Store
 
 **/bin/
-**/data/
+data/
 
 # Environments
 **/.env

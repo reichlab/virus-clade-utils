@@ -1,18 +1,26 @@
 """Functions for retrieving and parsing SARS-CoV-2 virus genome data."""
 
 import json
+import lzma
 import time
 import zipfile
+from pathlib import Path
 
 import polars as pl
 import structlog
+import us
 from virus_clade_utils.util.session import check_response, get_session
 
 logger = structlog.get_logger()
 
 
 def get_covid_genome_data(released_since_date: str, base_url: str, filename: str):
-    """Download genome data package from NCBI."""
+    """
+    Download genome data package from NCBI.
+    FIXME: Download the Nextclade-processed GenBank sequence data (which originates from NCBI)
+    from https://data.nextstrain.org/files/ncov/open/sequences.fasta.zst instead of using
+    the NCBI API.
+    """
     headers = {
         "Accept": "application/zip",
     }
@@ -52,6 +60,74 @@ def get_covid_genome_data(released_since_date: str, base_url: str, filename: str
     elapsed = end - start
 
     logger.info("NCBI API call completed", elapsed=elapsed)
+
+
+def download_covid_genome_metadata(url: str, data_path: Path) -> Path:
+    """Download the latest GenBank genome metadata data from Nextstrain."""
+
+    session = get_session()
+    filename = data_path / Path(url).name
+
+    start = time.perf_counter()
+    with session.get(url, stream=True) as result:
+        result.raise_for_status()
+        with open(filename, "wb") as f:
+            for chunk in result.iter_content(chunk_size=None):
+                f.write(chunk)
+
+    end = time.perf_counter()
+    elapsed = end - start
+    logger.info("genome metadata downloaded", elapsed=elapsed)
+
+    return filename
+
+
+def get_covid_genome_metadata(metadata_path: Path, num_rows: int | None = None) -> pl.LazyFrame:
+    """Read GenBank genome metadata into a Polars LazyFrame."""
+
+    if (compression_type := metadata_path.suffix) == ".zst":
+        metadata = pl.scan_csv(metadata_path, separator="\t", n_rows=num_rows)
+    elif compression_type == ".xz":
+        metadata = pl.read_csv(
+            lzma.open(metadata_path), separator="\t", n_rows=num_rows, infer_schema_length=100000
+        ).lazy()
+
+    return metadata
+
+
+def filter_covid_genome_metadata(metadata: pl.LazyFrame, cols: list = []) -> pl.LazyFrame:
+    """Apply a standard set of filters to the GenBank genome metadata."""
+
+    # Default columns to include in the filtered metadata
+    if len(cols) == 0:
+        cols = [
+            "clade_nextstrain",
+            "country",
+            "date",
+            "division",
+            "genbank_accession",
+            "genbank_accession_rev",
+            "host",
+        ]
+
+    # There are some other odd divisions in the data, but these are 50 states and DC
+    states = [state.name for state in us.states.STATES]
+    states.append("Washington DC")
+
+    # Filter dataset and do some general tidying
+    filtered_metadata = (
+        metadata.cast({"date": pl.Date}, strict=False)
+        .select(cols)
+        .filter(
+            pl.col("country") == "USA",
+            pl.col("division").is_in(states),
+            pl.col("date").is_not_null(),
+            pl.col("host") == "Homo sapiens",
+        )
+        .rename({"clade_nextstrain": "clade", "division": "location"})
+    )
+
+    return filtered_metadata
 
 
 def unzip_sequence_package(filename: str, data_path: str):

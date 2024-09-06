@@ -11,11 +11,8 @@ logger = structlog.get_logger()
 def get_session(session: requests.Session = None) -> requests.Session:
     """Return a requests session with retry logic."""
 
-    if session:
-        return session
-
     headers = {
-        "Accept-Encoding": "br, deflate, gzip, zstd",
+        "Accept-Encoding": "br, deflate, gzip, x-xz, zstd",
     }
 
     session = requests.Session()
