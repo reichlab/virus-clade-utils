@@ -62,11 +62,15 @@ def get_covid_genome_data(released_since_date: str, base_url: str, filename: str
     logger.info("NCBI API call completed", elapsed=elapsed)
 
 
-def download_covid_genome_metadata(url: str, data_path: Path) -> Path:
+def download_covid_genome_metadata(url: str, data_path: Path, use_existing: bool = False) -> Path:
     """Download the latest GenBank genome metadata data from Nextstrain."""
 
     session = get_session()
     filename = data_path / Path(url).name
+
+    if use_existing and filename.exists():
+        logger.info("using existing genome metadata file", metadata_file=str(filename))
+        return filename
 
     start = time.perf_counter()
     with session.get(url, stream=True) as result:
