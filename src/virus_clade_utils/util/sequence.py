@@ -79,7 +79,7 @@ def download_covid_genome_metadata(url: str, data_path: Path) -> Path:
     elapsed = end - start
     logger.info("genome metadata downloaded", elapsed=elapsed)
 
-    return result[0]
+    return filename
 
 
 def get_covid_genome_metadata(metadata_path: Path, num_rows: int | None = None) -> pl.LazyFrame:
