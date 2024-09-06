@@ -89,7 +89,7 @@ def download_covid_genome_metadata(url: str, data_path: Path, use_existing: bool
 def get_covid_genome_metadata(metadata_path: Path, num_rows: int | None = None) -> pl.LazyFrame:
     """Read GenBank genome metadata into a Polars LazyFrame."""
 
-    if (compression_type := metadata_path.suffix) == ".zst":
+    if (compression_type := metadata_path.suffix) in [".tsv", ".zst"]:
         metadata = pl.scan_csv(metadata_path, separator="\t", n_rows=num_rows)
     elif compression_type == ".xz":
         metadata = pl.read_csv(

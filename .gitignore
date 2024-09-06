@@ -11,6 +11,8 @@
 /data/*/*.md
 /data/*/*.tsv
 /data/*/*.zip
+/data/*/*.zst
+/data/*/*.xz
 
 
 # Byte-compiled / optimized / DLL files
