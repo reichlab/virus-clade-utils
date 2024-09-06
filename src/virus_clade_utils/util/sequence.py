@@ -134,6 +134,22 @@ def filter_covid_genome_metadata(metadata: pl.LazyFrame, cols: list = []) -> pl.
     return filtered_metadata
 
 
+def get_clade_counts(filtered_metadata: pl.LazyFrame) -> pl.LazyFrame:
+    """Return a count of clades by location and date."""
+
+    cols = [
+        "clade",
+        "country",
+        "date",
+        "location",
+        "host",
+    ]
+
+    counts = filtered_metadata.select(cols).group_by("location", "date", "clade").agg(pl.len().alias("count"))
+
+    return counts
+
+
 def unzip_sequence_package(filename: str, data_path: str):
     """Unzip the downloaded virus genome data package."""
     with zipfile.ZipFile(filename, "r") as package_zip:
