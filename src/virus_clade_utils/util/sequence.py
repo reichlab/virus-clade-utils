@@ -62,11 +62,15 @@ def get_covid_genome_data(released_since_date: str, base_url: str, filename: str
     logger.info("NCBI API call completed", elapsed=elapsed)
 
 
-def download_covid_genome_metadata(url: str, data_path: Path) -> Path:
+def download_covid_genome_metadata(url: str, data_path: Path, use_existing: bool = False) -> Path:
     """Download the latest GenBank genome metadata data from Nextstrain."""
 
     session = get_session()
     filename = data_path / Path(url).name
+
+    if use_existing and filename.exists():
+        logger.info("using existing genome metadata file", metadata_file=str(filename))
+        return filename
 
     start = time.perf_counter()
     with session.get(url, stream=True) as result:
@@ -85,7 +89,7 @@ def download_covid_genome_metadata(url: str, data_path: Path) -> Path:
 def get_covid_genome_metadata(metadata_path: Path, num_rows: int | None = None) -> pl.LazyFrame:
     """Read GenBank genome metadata into a Polars LazyFrame."""
 
-    if (compression_type := metadata_path.suffix) == ".zst":
+    if (compression_type := metadata_path.suffix) in [".tsv", ".zst"]:
         metadata = pl.scan_csv(metadata_path, separator="\t", n_rows=num_rows)
     elif compression_type == ".xz":
         metadata = pl.read_csv(
@@ -128,6 +132,22 @@ def filter_covid_genome_metadata(metadata: pl.LazyFrame, cols: list = []) -> pl.
     )
 
     return filtered_metadata
+
+
+def get_clade_counts(filtered_metadata: pl.LazyFrame) -> pl.LazyFrame:
+    """Return a count of clades by location and date."""
+
+    cols = [
+        "clade",
+        "country",
+        "date",
+        "location",
+        "host",
+    ]
+
+    counts = filtered_metadata.select(cols).group_by("location", "date", "clade").agg(pl.len().alias("count"))
+
+    return counts
 
 
 def unzip_sequence_package(filename: str, data_path: str):

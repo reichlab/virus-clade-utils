@@ -36,6 +36,7 @@ dev = [
 
 [project.entry-points."console_scripts"]
 assign_clades = "virus_clade_utils.assign_clades:main"
+clade_list = "virus_clade_utils.get_clade_list:main"
 
 [build-system]
 requires = ["setuptools>=64", "wheel"]

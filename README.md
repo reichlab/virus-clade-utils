@@ -9,7 +9,11 @@ This package was developed to provide data required for the [COVID-19 Variant No
 
 We are releasing `virus-clade-utils` as a standalone package for use by others who may find the functionality useful.
 
+
+## Usage
+
 TODO: Actual documentation
+
 
 ## Docker Setup
 
@@ -32,7 +36,7 @@ Use the directions below to run the pipeline in a Docker container.
     docker build --platform=linux/amd64 -t virus-clade-utils .
     ```
 
-3. Run the pipeline, passing in required arguments:
+3. To run the target data pipeline, passing in required arguments:
 
     ```bash
     docker run --platform linux/amd64 \
@@ -44,6 +48,25 @@ Use the directions below to run the pipeline in a Docker container.
     ```
 
 The clade assignments will now be in the local directory that was mounted to the Docker container via the `-v` flag (in this case, a folder called `data` in the current working directory).
+
+
+### Generating the clade list
+
+[This will evolve; below are some temporary instructions for anyone who wants to try this via Docker]
+
+1. Enter the container's bash shell:
+
+    ```bash
+    docker run --platform linux/amd64 -it --entrypoint bash virus-clade-utils
+    ```
+
+2. Once you're in the shell of the container:
+
+    ```bash
+    clade_list
+    ```
+
+**Note:** Sometimes this results in a "Killed" message from Docker due to memory constraints (it depends on the host machine, and we'll need to look into this).
 
 ### Running the test suite
 
