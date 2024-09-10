@@ -1,5 +1,6 @@
 """Functions for retrieving and parsing SARS-CoV-2 virus genome data."""
 
+import functools
 import json
 import lzma
 import time
@@ -12,6 +13,19 @@ import us
 from virus_clade_utils.util.session import check_response, get_session
 
 logger = structlog.get_logger()
+
+
+def timing(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        start_time = time.perf_counter()
+        value = func(*args, **kwargs)
+        end_time = time.perf_counter()
+        run_time = end_time - start_time
+        logger.info(f"{repr(func.__name__)} complete", elapsed_seconds=round(run_time, ndigits=2))
+        return value
+
+    return wrapper
 
 
 def get_covid_genome_data(released_since_date: str, base_url: str, filename: str):
@@ -62,26 +76,27 @@ def get_covid_genome_data(released_since_date: str, base_url: str, filename: str
     logger.info("NCBI API call completed", elapsed=elapsed)
 
 
-def download_covid_genome_metadata(url: str, data_path: Path, use_existing: bool = False) -> Path:
-    """Download the latest GenBank genome metadata data from Nextstrain."""
+@timing
+def download_nextstrain_file(url: str, data_path: Path, use_existing: bool = False) -> Path:
+    """Download genome file from Nextstrain."""
 
     session = get_session()
     filename = data_path / Path(url).name
 
     if use_existing and filename.exists():
-        logger.info("using existing genome metadata file", metadata_file=str(filename))
+        logger.info("using existing genome file", genome_file=str(filename))
         return filename
 
-    start = time.perf_counter()
+    # 16 MB * 1024 * 1024
+    chunk_size_bytes = 16_777_216
+
+    logger.info("Downloading genome file", url=url)
+
     with session.get(url, stream=True) as result:
         result.raise_for_status()
         with open(filename, "wb") as f:
-            for chunk in result.iter_content(chunk_size=None):
+            for chunk in result.iter_content(chunk_size=chunk_size_bytes):
                 f.write(chunk)
-
-    end = time.perf_counter()
-    elapsed = end - start
-    logger.info("genome metadata downloaded", elapsed=elapsed)
 
     return filename
 

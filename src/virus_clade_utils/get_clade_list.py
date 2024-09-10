@@ -10,7 +10,7 @@ from cloudpathlib import AnyPath
 
 from virus_clade_utils.util.config import Config
 from virus_clade_utils.util.sequence import (
-    download_covid_genome_metadata,
+    download_nextstrain_file,
     filter_covid_genome_metadata,
     get_clade_counts,
     get_covid_genome_metadata,
@@ -99,7 +99,7 @@ def main(
     """
 
     os.makedirs(data_dir, exist_ok=True)
-    genome_metadata_path = download_covid_genome_metadata(
+    genome_metadata_path = download_nextstrain_file(
         genome_metadata_path,
         data_dir,
     )
