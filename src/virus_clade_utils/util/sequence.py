@@ -1,9 +1,7 @@
 """Functions for retrieving and parsing SARS-CoV-2 virus genome data."""
 
-import functools
 import json
 import lzma
-import time
 import zipfile
 from pathlib import Path
 
@@ -11,23 +9,12 @@ import polars as pl
 import structlog
 import us
 from virus_clade_utils.util.session import check_response, get_session
+from virus_clade_utils.util.timing import time_function
 
 logger = structlog.get_logger()
 
 
-def timing(func):
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        start_time = time.perf_counter()
-        value = func(*args, **kwargs)
-        end_time = time.perf_counter()
-        run_time = end_time - start_time
-        logger.info(f"{repr(func.__name__)} complete", elapsed_seconds=round(run_time, ndigits=2))
-        return value
-
-    return wrapper
-
-
+@time_function
 def get_covid_genome_data(released_since_date: str, base_url: str, filename: str):
     """
     Download genome data package from NCBI.
@@ -58,7 +45,6 @@ def get_covid_genome_data(released_since_date: str, base_url: str, filename: str
 
     logger.info("NCBI API call starting", released_since_date=released_since_date)
 
-    start = time.perf_counter()
     response = session.post(base_url, data=json.dumps(request_body), timeout=(300, 300))
     check_response(response)
 
@@ -70,13 +56,8 @@ def get_covid_genome_data(released_since_date: str, base_url: str, filename: str
     with open(filename, "wb") as f:
         f.write(response.content)
 
-    end = time.perf_counter()
-    elapsed = end - start
 
-    logger.info("NCBI API call completed", elapsed=elapsed)
-
-
-@timing
+@time_function
 def download_nextstrain_file(url: str, data_path: Path, use_existing: bool = False) -> Path:
     """Download genome file from Nextstrain."""
 
@@ -90,7 +71,7 @@ def download_nextstrain_file(url: str, data_path: Path, use_existing: bool = Fal
     # 16 MB * 1024 * 1024
     chunk_size_bytes = 16_777_216
 
-    logger.info("Downloading genome file", url=url)
+    logger.info("downloading genome file", url=url)
 
     with session.get(url, stream=True) as result:
         result.raise_for_status()
