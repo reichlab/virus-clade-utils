@@ -116,7 +116,7 @@ def filter_covid_genome_metadata(metadata: pl.LazyFrame, cols: list = []) -> pl.
 
     # There are some other odd divisions in the data, but these are 50 states and DC
     states = [state.name for state in us.states.STATES]
-    states.append("Washington DC")
+    states.extend(["Washington DC", "Puerto Rico"])
 
     # Filter dataset and do some general tidying
     filtered_metadata = (
