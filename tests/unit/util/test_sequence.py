@@ -58,7 +58,7 @@ def test_filter_covid_genome_metadata():
         "date": ["2022-01-01", "2022-01-02", "2022-01-03", "2023-12-25", None, "2023-12-27"],
         "host": ["Homo sapiens", "Homo sapiens", "Homo sapiens", "Narwhals", "Homo sapiens", "Homo sapiens"],
         "country": ["USA", "Argentina", "USA", "USA", "USA", "USA"],
-        "division": ["Alaska", "Maine", "Puerto Rico", "Massachusetts", "Utah", "Pennsylvania"],
+        "division": ["Alaska", "Maine", "Guam", "Puerto Rico", "Utah", "Pennsylvania"],
         "clade_nextstrain": ["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
         "location": ["Vulcan", "Reisa", "Bajor", "Deep Space 9", "Earth", "Cardassia"],
         "genbank_accession": ["A1", "A2", "B1", "B2", "C1", "C2"],
