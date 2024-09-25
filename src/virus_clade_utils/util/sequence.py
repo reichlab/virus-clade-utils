@@ -4,11 +4,13 @@ import json
 import lzma
 import time
 import zipfile
+from datetime import datetime, timezone
 from pathlib import Path
 
 import polars as pl
 import structlog
-import us
+import us  # type: ignore
+from virus_clade_utils.util.reference import get_s3_object_url
 from virus_clade_utils.util.session import check_response, get_session
 
 logger = structlog.get_logger()
@@ -62,18 +64,28 @@ def get_covid_genome_data(released_since_date: str, base_url: str, filename: str
     logger.info("NCBI API call completed", elapsed=elapsed)
 
 
-def download_covid_genome_metadata(url: str, data_path: Path, use_existing: bool = False) -> Path:
+def download_covid_genome_metadata(
+    bucket: str, key: str, data_path: Path, as_of: str | None = None, use_existing: bool = False
+) -> Path:
     """Download the latest GenBank genome metadata data from Nextstrain."""
 
     session = get_session()
-    filename = data_path / Path(url).name
+
+    if as_of is None:
+        as_of_datetime = datetime.now().replace(tzinfo=timezone.utc)
+    else:
+        as_of_datetime = datetime.strptime(as_of, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+
+    (s3_version, s3_url) = get_s3_object_url(bucket, key, as_of_datetime)
+    filename = data_path / f"{as_of_datetime.date().strftime("%Y-%m-%d")}-{Path(key).name}"
 
     if use_existing and filename.exists():
         logger.info("using existing genome metadata file", metadata_file=str(filename))
         return filename
 
     start = time.perf_counter()
-    with session.get(url, stream=True) as result:
+    logger.info("starting genome metadata download", source=s3_url, destination=str(filename))
+    with session.get(s3_url, stream=True) as result:
         result.raise_for_status()
         with open(filename, "wb") as f:
             for chunk in result.iter_content(chunk_size=None):

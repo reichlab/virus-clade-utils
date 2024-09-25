@@ -14,6 +14,7 @@ license = {text = "MIT"}
 
 dependencies = [
     "awscli>=1.32.92",
+    "boto3",
     "click",
     "cloudpathlib",
     "pandas",

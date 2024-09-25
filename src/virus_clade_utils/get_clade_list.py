@@ -68,7 +68,8 @@ def get_clades(clade_counts: pl.LazyFrame, threshold: float, threshold_weeks: in
 
 # FIXME: provide ability to instantiate Config for the get_clade_list function and get the data_path from there
 def main(
-    genome_metadata_path: AnyPath = Config.nextstrain_latest_genome_metadata,
+    genome_metadata_bucket: str = Config.nextstrain_ncov_bucket,
+    genome_metadata_key: str = Config.nextstrain_genome_metadata_key,
     data_dir: AnyPath = AnyPath(".").home() / "covid_variant",
     threshold: float = 0.01,
     threshold_weeks: int = 3,
@@ -79,8 +80,11 @@ def main(
 
     Parameters
     ----------
-    genome_metadata_path : AnyPath
-        Path to location of the most recent genome metadata file published by Nextstrain
+    genome_metadata_bucket : str
+        Name of the S3 bucket that hosts Nextstrain's open (GenBank) genome
+        metadata files published by the ncov pipeline.
+    genome_metdata_key : str
+        S3 key of the Nextstrain genome metadata file.
     data_dir : AnyPath
         Path to the location where the genome metadata file is saved after download.
     clade_counts : polars.LazyFrame
@@ -97,10 +101,10 @@ def main(
     -------
     list of strings
     """
-
     os.makedirs(data_dir, exist_ok=True)
     genome_metadata_path = download_covid_genome_metadata(
-        genome_metadata_path,
+        genome_metadata_bucket,
+        genome_metadata_key,
         data_dir,
     )
     lf_metadata = get_covid_genome_metadata(genome_metadata_path)
