@@ -10,6 +10,7 @@ from pathlib import Path
 import polars as pl
 import structlog
 import us  # type: ignore
+from requests import Session
 from virus_clade_utils.util.reference import get_s3_object_url
 from virus_clade_utils.util.session import check_response, get_session
 
@@ -65,11 +66,9 @@ def get_covid_genome_data(released_since_date: str, base_url: str, filename: str
 
 
 def download_covid_genome_metadata(
-    bucket: str, key: str, data_path: Path, as_of: str | None = None, use_existing: bool = False
+    session: Session, bucket: str, key: str, data_path: Path, as_of: str | None = None, use_existing: bool = False
 ) -> Path:
     """Download the latest GenBank genome metadata data from Nextstrain."""
-
-    session = get_session()
 
     if as_of is None:
         as_of_datetime = datetime.now().replace(tzinfo=timezone.utc)
