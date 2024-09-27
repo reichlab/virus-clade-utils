@@ -76,7 +76,7 @@ def download_covid_genome_metadata(
         as_of_datetime = datetime.strptime(as_of, "%Y-%m-%d").replace(tzinfo=timezone.utc)
 
     (s3_version, s3_url) = get_s3_object_url(bucket, key, as_of_datetime)
-    filename = data_path / f"{as_of_datetime.date().strftime("%Y-%m-%d")}-{Path(key).name}"
+    filename = data_path / f"{as_of_datetime.date().strftime('%Y-%m-%d')}-{Path(key).name}"
 
     if use_existing and filename.exists():
         logger.info("using existing genome metadata file", metadata_file=str(filename))
