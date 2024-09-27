@@ -81,6 +81,10 @@ pycparser==2.22
 pygments==2.18.0
     # via rich
 pytest==8.2.1
+    # via
+    #   virus-clade-utils (pyproject.toml)
+    #   pytest-mock
+pytest-mock==3.14.0
     # via virus-clade-utils (pyproject.toml)
 python-dateutil==2.9.0.post0
     # via
