@@ -1,6 +1,7 @@
+from datetime import datetime, timezone
 from unittest import mock
 
-from virus_clade_utils.util.reference import get_nextclade_dataset
+from virus_clade_utils.util.reference import get_nextclade_dataset, get_s3_object_url
 
 
 @mock.patch("subprocess.run")
@@ -11,3 +12,19 @@ def test_get_nextclade_dataset(tmp_path):
     # datasetset version, as determined by the as_of_date being passed
     # (returned version is temporarily hard-coded until Nextstrain provides the info we need)
     assert "2024-07-17--12-57-03Z" in str(dataset_path)
+
+
+def test_get_s3_object_url(s3_setup):
+    s3_client, bucket_name, object_key = s3_setup
+
+    target_date = datetime.strptime("2023-02-15", "%Y-%m-%d").replace(tzinfo=timezone.utc)
+
+    version_id, version_url = get_s3_object_url(bucket_name, object_key, target_date)
+
+    assert version_id is not None
+    s3_object = s3_client.get_object(Bucket=bucket_name, Key=object_key, VersionId=version_id)
+    last_modified = s3_object["LastModified"]
+
+    assert last_modified <= target_date
+    assert last_modified == datetime.strptime("2023-02-05 14:33:06", "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
+    assert version_url == f"https://{bucket_name}.s3.amazonaws.com/{object_key}?versionId={version_id}"

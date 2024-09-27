@@ -34,6 +34,6 @@ def test_clade_list(test_file_path, tmp_path, threshold, weeks, max_clades, expe
     mock = MagicMock(return_value=test_genome_metadata, name="genome_metadata_download_mock")
 
     with patch("virus_clade_utils.get_clade_list.download_covid_genome_metadata", mock):
-        actual_list = main(test_genome_metadata, tmp_path, threshold, weeks, max_clades)
+        actual_list = main("some_bucket", "some_key", tmp_path, threshold, weeks, max_clades)
 
     assert set(expected_list) == set(actual_list)

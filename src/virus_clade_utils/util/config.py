@@ -7,9 +7,9 @@ from cloudpathlib import AnyPath
 
 @dataclass
 class Config:
-    data_path_root: InitVar[AnyPath]
     sequence_released_date: InitVar[datetime]
     reference_tree_as_of_date: InitVar[datetime]
+    data_path_root: InitVar[str] = AnyPath(".")
     sequence_released_since_date: str = None
     reference_tree_date: str = None
     now = datetime.now()
@@ -18,7 +18,8 @@ class Config:
     ncbi_package_name: str = "ncbi.zip"
     ncbi_sequence_file: AnyPath = None
     ncbi_sequence_metadata_file: AnyPath = None
-    nextstrain_latest_genome_metadata = "https://data.nextstrain.org/files/ncov/open/metadata.tsv.zst"
+    nextstrain_ncov_bucket = "nextstrain-data"
+    nextstrain_genome_metadata_key = "files/ncov/open/metadata.tsv.zst"
     nextclade_base_url: str = "https://nextstrain.org/nextclade/sars-cov-2"
     reference_tree_file: AnyPath = None
     root_sequence_file: AnyPath = None
@@ -28,9 +29,9 @@ class Config:
 
     def __post_init__(
         self,
-        data_path_root: str | None,
         sequence_released_date: datetime.date,
         reference_tree_as_of_date: datetime.date,
+        data_path_root: str | None,
     ):
         if data_path_root:
             self.data_path = AnyPath(data_path_root)

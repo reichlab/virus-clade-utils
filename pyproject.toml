@@ -14,6 +14,7 @@ license = {text = "MIT"}
 
 dependencies = [
     "awscli>=1.32.92",
+    "boto3",
     "click",
     "cloudpathlib",
     "pandas",
@@ -29,8 +30,11 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "coverage",
+    "freezegun",
+    "moto",
     "mypy",
     "pytest",
+    "pytest-mock",
     "ruff",
 ]
 
