@@ -3,14 +3,19 @@
 awscli==1.32.116
     # via virus-clade-utils (pyproject.toml)
 boto3==1.34.116
-    # via virus-clade-utils (pyproject.toml)
+    # via
+    #   virus-clade-utils (pyproject.toml)
+    #   moto
 botocore==1.34.116
     # via
     #   awscli
     #   boto3
+    #   moto
     #   s3transfer
 certifi==2024.2.2
     # via requests
+cffi==1.17.1
+    # via cryptography
 charset-normalizer==3.3.2
     # via requests
 click==8.1.7
@@ -23,22 +28,34 @@ colorama==0.4.6
     # via awscli
 coverage==7.5.3
     # via virus-clade-utils (pyproject.toml)
+cryptography==43.0.1
+    # via moto
 docutils==0.16
     # via awscli
+freezegun==1.5.1
+    # via virus-clade-utils (pyproject.toml)
 idna==3.7
     # via requests
 iniconfig==2.0.0
     # via pytest
 jellyfish==1.1.0
     # via us
+jinja2==3.1.4
+    # via moto
 jmespath==1.0.1
     # via
     #   boto3
     #   botocore
 markdown-it-py==3.0.0
     # via rich
+markupsafe==2.1.5
+    # via
+    #   jinja2
+    #   werkzeug
 mdurl==0.1.2
     # via markdown-it-py
+moto==5.0.15
+    # via virus-clade-utils (pyproject.toml)
 mypy==1.10.1
     # via virus-clade-utils (pyproject.toml)
 mypy-extensions==1.0.0
@@ -59,6 +76,8 @@ pyarrow==16.1.0
     # via virus-clade-utils (pyproject.toml)
 pyasn1==0.6.0
     # via rsa
+pycparser==2.22
+    # via cffi
 pygments==2.18.0
     # via rich
 pytest==8.2.1
@@ -66,13 +85,22 @@ pytest==8.2.1
 python-dateutil==2.9.0.post0
     # via
     #   botocore
+    #   freezegun
+    #   moto
     #   pandas
 pytz==2024.1
     # via pandas
 pyyaml==6.0.1
-    # via awscli
+    # via
+    #   awscli
+    #   responses
 requests==2.32.3
-    # via virus-clade-utils (pyproject.toml)
+    # via
+    #   virus-clade-utils (pyproject.toml)
+    #   moto
+    #   responses
+responses==0.25.3
+    # via moto
 rich==13.7.1
     # via
     #   virus-clade-utils (pyproject.toml)
@@ -101,5 +129,10 @@ urllib3==2.2.1
     # via
     #   botocore
     #   requests
+    #   responses
 us==3.2.0
     # via virus-clade-utils (pyproject.toml)
+werkzeug==3.0.4
+    # via moto
+xmltodict==0.13.0
+    # via moto

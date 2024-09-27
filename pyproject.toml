@@ -30,6 +30,8 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "coverage",
+    "freezegun",
+    "moto",
     "mypy",
     "pytest",
     "ruff",
