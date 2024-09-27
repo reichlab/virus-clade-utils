@@ -1,3 +1,5 @@
+# mypy: ignore-errors
+
 from dataclasses import InitVar, asdict, dataclass, field
 from datetime import datetime
 from pprint import pprint
@@ -29,8 +31,8 @@ class Config:
 
     def __post_init__(
         self,
-        sequence_released_date: datetime.date,
-        reference_tree_as_of_date: datetime.date,
+        sequence_released_date: datetime,
+        reference_tree_as_of_date: datetime,
         data_path_root: str | None,
     ):
         if data_path_root:

@@ -11,6 +11,7 @@ import polars as pl
 import structlog
 import us  # type: ignore
 from requests import Session
+
 from virus_clade_utils.util.reference import get_s3_object_url
 from virus_clade_utils.util.session import check_response, get_session
 
@@ -161,7 +162,7 @@ def get_clade_counts(filtered_metadata: pl.LazyFrame) -> pl.LazyFrame:
     return counts
 
 
-def unzip_sequence_package(filename: str, data_path: str):
+def unzip_sequence_package(filename: Path, data_path: Path):
     """Unzip the downloaded virus genome data package."""
     with zipfile.ZipFile(filename, "r") as package_zip:
         zip_contents = package_zip.namelist()
@@ -188,6 +189,6 @@ def parse_sequence_assignments(df_assignments: pl.DataFrame) -> pl.DataFrame:
         raise ValueError("Clade assignment data contains duplicate sequence. Stopping assignment process.")
 
     # add the parsed sequence number as a new column
-    df_assignments = df_assignments.insert_column(1, seq)
+    df_assignments = df_assignments.insert_column(1, seq)  # type: ignore
 
     return df_assignments

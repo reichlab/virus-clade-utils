@@ -29,6 +29,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
+    "boto3-stubs[s3]",
     "coverage",
     "freezegun",
     "moto",
@@ -36,6 +37,7 @@ dev = [
     "pytest",
     "pytest-mock",
     "ruff",
+    "types-requests",
 ]
 
 [project.entry-points."console_scripts"]
@@ -59,3 +61,4 @@ lint.extend-select = ["I"]
 
 [tools.setuptools]
 packages = ["virus_clade_utils"]
+
