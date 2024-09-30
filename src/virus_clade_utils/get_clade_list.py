@@ -15,7 +15,7 @@ from virus_clade_utils.util.sequence import (
     get_clade_counts,
     get_covid_genome_metadata,
 )
-from virus_clade_utils.util.session import get_session
+from virus_clade_utils.util.session import _get_session
 
 logger = structlog.get_logger()
 
@@ -103,7 +103,7 @@ def main(
     list of strings
     """
     os.makedirs(data_dir, exist_ok=True)
-    session = get_session()
+    session = _get_session()
     genome_metadata_path = download_covid_genome_metadata(
         session,
         genome_metadata_bucket,

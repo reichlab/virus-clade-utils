@@ -8,7 +8,7 @@ from requests.packages.urllib3.util.retry import Retry  # type: ignore
 logger = structlog.get_logger()
 
 
-def get_session(session: requests.Session = None) -> requests.Session:
+def _get_session(session: requests.Session = None) -> requests.Session:
     """Return a requests session with retry logic."""
 
     headers = {
@@ -30,7 +30,7 @@ def get_session(session: requests.Session = None) -> requests.Session:
     return session
 
 
-def check_response(response: requests.Response) -> bool:
+def _check_response(response: requests.Response) -> bool:
     """Check the results of a requests session."""
 
     if not response.ok:

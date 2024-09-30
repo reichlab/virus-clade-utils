@@ -47,7 +47,7 @@ def get_nextclade_dataset(as_of_date: str, data_path_root: str) -> Path:
     return DATASET_PATH
 
 
-def get_s3_object_url(bucket_name: str, object_key: str, date: datetime) -> Tuple[str, str]:
+def _get_s3_object_url(bucket_name: str, object_key: str, date: datetime) -> Tuple[str, str]:
     """
     For a versioned, public S3 bucket and object key, return the version ID
     of the object as it existed at a specific date (UTC)
