@@ -8,24 +8,26 @@ from urllib3.util import Retry
 logger = structlog.get_logger()
 
 
-def _get_session() -> requests.Session:
+def _get_session(retry: bool = True) -> requests.Session:
     """Return a requests session with retry logic."""
 
     headers = {
         "Accept-Encoding": "br, deflate, gzip, x-xz, zstd",
+        "Accept": "application/json",
     }
-
     session = requests.Session()
-    # attach a urllib3 retry adapter to the requests session
-    # https://urllib3.readthedocs.io/en/latest/reference/urllib3.util.html#urllib3.util.retry.Retry
-    retries = Retry(
-        total=5,
-        allowed_methods=frozenset(["GET", "POST"]),
-        backoff_factor=1,
-        status_forcelist=[401, 403, 404, 429, 500, 502, 503, 504],
-    )
-    session.mount("https://", HTTPAdapter(max_retries=retries))
     session.headers.update(headers)
+
+    if retry:
+        # attach a urllib3 retry adapter to the requests session
+        # https://urllib3.readthedocs.io/en/latest/reference/urllib3.util.html#urllib3.util.retry.Retry
+        retries = Retry(
+            total=5,
+            allowed_methods=frozenset(["GET", "POST"]),
+            backoff_factor=1,
+            status_forcelist=[401, 403, 404, 429, 500, 502, 503, 504],
+        )
+        session.mount("https://", HTTPAdapter(max_retries=retries))
 
     return session
 

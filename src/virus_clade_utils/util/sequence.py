@@ -111,6 +111,28 @@ def get_covid_genome_metadata(metadata_path: Path, num_rows: int | None = None) 
     return metadata
 
 
+def _get_ncov_metadata(
+    url_ncov_metadata: str,
+    session: Session | None = None,
+) -> dict:
+    """Return metadata emitted by the Nextstrain ncov pipeline."""
+    if not session:
+        session = _get_session(retry=False)
+
+    response = session.get(url_ncov_metadata)
+    if not response.ok:
+        logger.warn(
+            "Failed to retrieve ncov metadata",
+            status_code=response.status_code,
+            response_text=response.text,
+            request=response.request.url,
+            request_body=response.request.body,
+        )
+        return {}
+
+    return response.json()
+
+
 def filter_covid_genome_metadata(metadata: pl.LazyFrame, cols: list = []) -> pl.LazyFrame:
     """Apply a standard set of filters to the GenBank genome metadata."""
 

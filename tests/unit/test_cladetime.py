@@ -109,3 +109,12 @@ def test_cladetime_urls(s3_setup, sequence_as_of, expected_content):
                 assert ct.url_ncov_metadata is None
             else:
                 assert ct.url_ncov_metadata is not None
+
+
+def test_cladetime_ncov_metadata():
+    ct = CladeTime()
+    ct.url_ncov_metadata = "https://httpstat.us/200"
+    assert ct.ncov_metadata == {"code": 200, "description": "OK"}
+
+    ct.url_ncov_metadata = "https://httpstat.us/504"
+    assert ct.ncov_metadata == {}

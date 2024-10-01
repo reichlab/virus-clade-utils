@@ -7,6 +7,7 @@ import structlog
 from virus_clade_utils.exceptions import CladeTimeInvalidDateError
 from virus_clade_utils.util.config import Config
 from virus_clade_utils.util.reference import _get_s3_object_url
+from virus_clade_utils.util.sequence import _get_ncov_metadata
 
 logger = structlog.get_logger()
 
@@ -21,6 +22,9 @@ class CladeTime:
     sequence_as_of : datetime
         Use the NextStrain sequences and sequence metadata that were available
         as of this date and time (UTC).
+    ncov_metadata : dict
+        Metadata for the Nextstrain ncov pipeline that generated the sequence and
+        sequence metadata that correspond to the sequence_as_of date.
     tree_as_of : datetime
         Use the NextStrain reference tree that was available as of this
         date and time (UTC).
@@ -53,6 +57,7 @@ class CladeTime:
         self._config = self._get_config()
         self.sequence_as_of = self._validate_as_of_date(sequence_as_of)
         self.tree_as_of = self._validate_as_of_date(tree_as_of)
+        self._ncov_metadata = {}
 
         self.url_sequence = _get_s3_object_url(
             self._config.nextstrain_ncov_bucket, self._config.nextstrain_genome_sequence_key, self.sequence_as_of
@@ -68,6 +73,20 @@ class CladeTime:
             )[1]
         else:
             self.url_ncov_metadata = None
+
+    @property
+    def ncov_metadata(self):
+        return self._ncov_metadata
+
+    @ncov_metadata.getter
+    def ncov_metadata(self) -> dict:
+        """Set the ncov_metadata attribute."""
+        if self.url_ncov_metadata:
+            metadata = _get_ncov_metadata(self.url_ncov_metadata)
+            return metadata
+        else:
+            metadata = {}
+        return metadata
 
     def _get_config(self) -> Config:
         """Return a config object."""
