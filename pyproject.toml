@@ -37,6 +37,7 @@ dev = [
     "pytest",
     "pytest-mock",
     "ruff",
+    "types-python-dateutil",
     "types-requests",
 ]
 

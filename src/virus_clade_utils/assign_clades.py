@@ -19,13 +19,13 @@ from virus_clade_utils.util.sequence import (
 logger = structlog.get_logger()
 
 
-def setup_config(base_data_dir: str, sequence_released_date: datetime, reference_tree_as_of_date: datetime) -> Config:
+def setup_config(base_data_dir: str, sequence_released_date: datetime, tree_as_of_date: datetime) -> Config:
     """Return an initialized Config class for the pipeline run."""
 
     config = Config(
         data_path_root=base_data_dir,
         sequence_released_date=sequence_released_date,
-        reference_tree_as_of_date=reference_tree_as_of_date,
+        tree_as_of_date=tree_as_of_date,
     )
 
     return config
