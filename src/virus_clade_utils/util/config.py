@@ -1,7 +1,7 @@
 # mypy: ignore-errors
 
 from dataclasses import InitVar, asdict, dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from pprint import pprint
 
 from cloudpathlib import AnyPath
@@ -20,8 +20,17 @@ class Config:
     ncbi_package_name: str = "ncbi.zip"
     ncbi_sequence_file: AnyPath = None
     ncbi_sequence_metadata_file: AnyPath = None
+
+    # Nextstrain sequence data files in their current format is published back to 2023-05-01
+    nextstrain_min_seq_date: datetime = datetime(2023, 5, 1).replace(tzinfo=timezone.utc)
+
+    # Nextstrain ncov pipeline metadata began publishing on 2024-08-01
+    nextstrain_min_ncov_metadata_date: datetime = datetime(2024, 8, 1, 1, 26, 29, tzinfo=timezone.utc)
+
     nextstrain_ncov_bucket = "nextstrain-data"
+    nextstrain_ncov_metadata_key = "files/ncov/open/metadata_version.json"
     nextstrain_genome_metadata_key = "files/ncov/open/metadata.tsv.zst"
+    nextstrain_genome_sequence_key = "files/ncov/open/sequences.fasta.zst"
     nextclade_base_url: str = "https://nextstrain.org/nextclade/sars-cov-2"
     reference_tree_file: AnyPath = None
     root_sequence_file: AnyPath = None

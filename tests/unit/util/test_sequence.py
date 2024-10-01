@@ -63,16 +63,20 @@ def test_get_covid_genome_metadata(test_file_path, metadata_file):
 )
 def test_download_covid_genome_metadata(s3_setup, tmp_path, mock_session, as_of, filename):
     """Test filenames saved by covid genome metadata download."""
-    s3_client, bucket_name, object_key = s3_setup
-    actual_filename = download_covid_genome_metadata(mock_session, bucket_name, object_key, tmp_path, as_of=as_of)
+    s3_client, bucket_name, s3_object_keys = s3_setup
+    actual_filename = download_covid_genome_metadata(
+        mock_session, bucket_name, s3_object_keys["sequence_metadata"], tmp_path, as_of=as_of
+    )
     assert actual_filename.name == filename
 
 
 def test_download_covid_genome_metadata_no_history(s3_setup, tmp_path, mock_session):
     """Test genome metadata download where there is no history that matches the as_of date."""
-    s3_client, bucket_name, object_key = s3_setup
+    s3_client, bucket_name, s3_object_keys = s3_setup
     with pytest.raises(ValueError):
-        download_covid_genome_metadata(mock_session, bucket_name, object_key, tmp_path, as_of="2000-01-01")
+        download_covid_genome_metadata(
+            mock_session, bucket_name, s3_object_keys["sequence_metadata"], tmp_path, as_of="2000-01-01"
+        )
 
 
 def test_filter_covid_genome_metadata():

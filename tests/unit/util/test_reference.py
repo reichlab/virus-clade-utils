@@ -15,9 +15,10 @@ def test_get_nextclade_dataset(tmp_path):
 
 
 def test__get_s3_object_url(s3_setup):
-    s3_client, bucket_name, object_key = s3_setup
+    s3_client, bucket_name, s3_object_keys = s3_setup
 
     target_date = datetime.strptime("2023-02-15", "%Y-%m-%d").replace(tzinfo=timezone.utc)
+    object_key = s3_object_keys["sequence_metadata"]
 
     version_id, version_url = _get_s3_object_url(bucket_name, object_key, target_date)
 
