@@ -88,6 +88,12 @@ class CladeTime:
             metadata = {}
         return metadata
 
+    def __repr__(self):
+        return f"CladeTime(sequence_as_of={self.sequence_as_of}, tree_as_of={self.tree_as_of})"
+
+    def __str__(self):
+        return f"Work with Nextstrain Sara-CoV-2 sequences as of {self.sequence_as_of} and Nextclade clade assignments as of {self.tree_as_of}"
+
     def _get_config(self) -> Config:
         """Return a config object."""
         # dates passed to Config don't actually do anything in this case
