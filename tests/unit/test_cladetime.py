@@ -5,8 +5,8 @@ from urllib.parse import parse_qs, urlparse
 import dateutil.tz
 import pytest
 from freezegun import freeze_time
-from virus_clade_utils.cladetime import CladeTime  # type: ignore
-from virus_clade_utils.exceptions import CladeTimeInvalidDateError  # type: ignore
+from virus_clade_utils.cladetime import CladeTime
+from virus_clade_utils.exceptions import CladeTimeInvalidDateError
 from virus_clade_utils.util.config import Config
 
 

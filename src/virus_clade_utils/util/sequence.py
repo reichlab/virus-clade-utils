@@ -9,7 +9,7 @@ from pathlib import Path
 
 import polars as pl
 import structlog
-import us  # type: ignore
+import us
 from requests import Session
 
 from virus_clade_utils.util.reference import _get_s3_object_url

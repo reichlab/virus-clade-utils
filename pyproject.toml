@@ -24,7 +24,8 @@ dependencies = [
     "rich",
     "rich-click",
     "structlog",
-    "us"
+    "urllib3",
+    "us",
 ]
 
 [project.optional-dependencies]
@@ -62,4 +63,7 @@ lint.extend-select = ["I"]
 
 [tools.setuptools]
 packages = ["virus_clade_utils"]
+
+[tool.mypy]
+ignore_missing_imports = true
 

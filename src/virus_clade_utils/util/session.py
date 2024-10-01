@@ -3,12 +3,12 @@
 import requests
 import structlog
 from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry  # type: ignore
+from urllib3.util import Retry
 
 logger = structlog.get_logger()
 
 
-def _get_session(session: requests.Session = None) -> requests.Session:
+def _get_session() -> requests.Session:
     """Return a requests session with retry logic."""
 
     headers = {
