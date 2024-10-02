@@ -33,7 +33,7 @@ Once the package is installed, you can instantiate a `CladeTime` object in a Pyt
 #### Work with the latest Nextstrain Sars-Cov-2 sequence metadata and clade assignments
 
 ```python
-In [1]: from virus_clade_utils.clade_time import CladeTime
+In [1]: from virus_clade_utils.cladetime import CladeTime
 
 In [2]: ct = CladeTime()
 
@@ -55,7 +55,7 @@ Out[4]:
  #### Work with point-in-time Nextstrain Sars-Cov-2 sequence metadata and clade assignments
 
  ```python
-In [5]: from virus_clade_utils.clade_time import CladeTime
+In [5]: from virus_clade_utils.cladetime import CladeTime
 
 In [6]: ct = CladeTime(sequence_as_of="2024-08-31", tree_as_of="2024-08-01")
 
