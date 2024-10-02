@@ -12,7 +12,66 @@ We are releasing `virus-clade-utils` as a standalone package for use by others w
 
 ## Usage
 
-TODO: Actual documentation
+This library contains two types of components:
+
+1. Scripts and CLI tools for use in database pipelinnes required by the Variant Nowcast Hub
+(these are in development and not documented here).
+
+2. A CladeTime class for interactively working with Sars-Cov-2 sequence and clade data as of a specific date.
+
+### Sample CladeTime usage
+
+To use the interactive `CladeTime` object, install this package:
+
+```bash
+    pip install git+https://github.com/reichlab/virus-clade-utils.git
+```
+
+Once the package is installed, you can instantiate a `CladeTime` object in a Python console
+(see some examples below).
+
+#### Work with the latest Nextstrain Sars-Cov-2 sequence metadata and clade assignments
+
+```python
+In [1]: from virus_clade_utils.cladetime import CladeTime
+
+In [2]: ct = CladeTime()
+
+# URL for the corresponding Nextstrain Sars-Cov-2 sequence metadata
+In [3]: ct.url_sequence_metadata
+Out[3]: 'https://nextstrain-data.s3.amazonaws.com/files/ncov/open/metadata.tsv.zst?versionId=VJomXHLN2L9aqvS9Ax_LJ4ecr5ZsFFhE'
+
+# Metadata from the pipeline that produced the above file
+In [4]: ct.ncov_metadata
+Out[4]:
+{'schema_version': 'v1',
+ 'nextclade_version': 'nextclade 3.8.2',
+ 'nextclade_dataset_name': 'SARS-CoV-2',
+ 'nextclade_dataset_version': '2024-09-25--21-50-30Z',
+ 'nextclade_tsv_sha256sum': 'fbe579554e925e4dfaf74cfb4e72b52c702e671f0f0374d896f1e30ae4fe5566',
+ 'metadata_tsv_sha256sum': '5a4fd84a5cd3c4ead9cf730d4df10b8734898c6c3e0cae1c8c0acf432325d22c'}
+ ```
+
+ #### Work with point-in-time Nextstrain Sars-Cov-2 sequence metadata and clade assignments
+
+ ```python
+In [5]: from virus_clade_utils.cladetime import CladeTime
+
+In [6]: ct = CladeTime(sequence_as_of="2024-08-31", tree_as_of="2024-08-01")
+
+# URL for the corresponding Nextstrain Sars-Cov-2 sequence metadata as it existing on 2024-08-31
+In [7]: ct.url_sequence_metadata
+Out[7]: 'https://nextstrain-data.s3.amazonaws.com/files/ncov/open/metadata.tsv.zst?versionId=1SZMfjWxXjNy530F6L7MfyflUCbue.JD'
+
+# Metadata for the pipeline run that produced the above file
+In [8]: ct.ncov_metadata
+Out[8]: {'schema_version': 'v1',
+ 'nextclade_version': 'nextclade 3.8.2',
+ 'nextclade_dataset_name': 'SARS-CoV-2',
+ 'nextclade_dataset_version': '2024-07-17--12-57-03Z',
+ 'nextclade_tsv_sha256sum': 'fd30f0b258f73fdcf5acefe77937ebe7d88862093bb4aaf3a7e935650ccea060',
+ 'metadata_tsv_sha256sum': '898451d9750128b4f90253d91cef0092e51965e879536e80aa6598de0fd4af29'}
+```
 
 
 ## Docker Setup

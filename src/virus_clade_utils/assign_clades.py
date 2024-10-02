@@ -1,3 +1,5 @@
+# mypy: ignore-errors
+
 import datetime
 import os
 import subprocess
@@ -9,21 +11,21 @@ import structlog
 from virus_clade_utils.util.config import Config
 from virus_clade_utils.util.reference import get_nextclade_dataset
 from virus_clade_utils.util.sequence import (
+    _unzip_sequence_package,
     get_covid_genome_data,
     parse_sequence_assignments,
-    unzip_sequence_package,
 )
 
 logger = structlog.get_logger()
 
 
-def setup_config(base_data_dir: str, sequence_released_date: datetime, reference_tree_as_of_date: datetime) -> Config:
+def setup_config(base_data_dir: str, sequence_released_date: datetime, tree_as_of_date: datetime) -> Config:
     """Return an initialized Config class for the pipeline run."""
 
     config = Config(
         data_path_root=base_data_dir,
         sequence_released_date=sequence_released_date,
-        reference_tree_as_of_date=reference_tree_as_of_date,
+        tree_as_of_date=tree_as_of_date,
     )
 
     return config
@@ -39,7 +41,7 @@ def get_sequences(config: Config):
     sequence_released_datetime = sequence_released_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
 
     get_covid_genome_data(sequence_released_datetime, base_url=config.ncbi_base_url, filename=sequence_package)
-    unzip_sequence_package(sequence_package, config.data_path)
+    _unzip_sequence_package(sequence_package, config.data_path)
 
     logger.info("NCBI SARS-COV-2 genome package downloaded and unzipped", package_location=sequence_package)
 

@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from unittest import mock
 
-from virus_clade_utils.util.reference import get_nextclade_dataset, get_s3_object_url
+from virus_clade_utils.util.reference import _get_s3_object_url, get_nextclade_dataset
 
 
 @mock.patch("subprocess.run")
@@ -14,12 +14,13 @@ def test_get_nextclade_dataset(tmp_path):
     assert "2024-07-17--12-57-03Z" in str(dataset_path)
 
 
-def test_get_s3_object_url(s3_setup):
-    s3_client, bucket_name, object_key = s3_setup
+def test__get_s3_object_url(s3_setup):
+    s3_client, bucket_name, s3_object_keys = s3_setup
 
     target_date = datetime.strptime("2023-02-15", "%Y-%m-%d").replace(tzinfo=timezone.utc)
+    object_key = s3_object_keys["sequence_metadata"]
 
-    version_id, version_url = get_s3_object_url(bucket_name, object_key, target_date)
+    version_id, version_url = _get_s3_object_url(bucket_name, object_key, target_date)
 
     assert version_id is not None
     s3_object = s3_client.get_object(Bucket=bucket_name, Key=object_key, VersionId=version_id)

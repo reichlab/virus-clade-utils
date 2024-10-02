@@ -13,7 +13,7 @@ from botocore.exceptions import BotoCoreError, ClientError, NoCredentialsError
 logger = structlog.get_logger()
 
 
-def get_nextclade_dataset(as_of_date: str, data_path_root: str) -> str:
+def get_nextclade_dataset(as_of_date: str, data_path_root: str) -> Path:
     """
     Return the Nextclade dataset relevant to a specified as_of_date. The dataset is
     in .zip format and contains two components required for assignming virus
@@ -47,13 +47,13 @@ def get_nextclade_dataset(as_of_date: str, data_path_root: str) -> str:
     return DATASET_PATH
 
 
-def get_s3_object_url(bucket_name: str, object_key: str, date: datetime) -> Tuple[str, str]:
+def _get_s3_object_url(bucket_name: str, object_key: str, date: datetime) -> Tuple[str, str]:
     """
     For a versioned, public S3 bucket and object key, return the version ID
     of the object as it existed at a specific date (UTC)
     """
     try:
-        s3_client = boto3.client("s3", config=boto3.session.Config(signature_version=UNSIGNED))
+        s3_client = boto3.client("s3", config=boto3.session.Config(signature_version=UNSIGNED))  # type: ignore
 
         paginator = s3_client.get_paginator("list_object_versions")
         page_iterator = paginator.paginate(Bucket=bucket_name, Prefix=object_key)

@@ -24,11 +24,13 @@ dependencies = [
     "rich",
     "rich-click",
     "structlog",
-    "us"
+    "urllib3",
+    "us",
 ]
 
 [project.optional-dependencies]
 dev = [
+    "boto3-stubs[s3]",
     "coverage",
     "freezegun",
     "moto",
@@ -36,7 +38,12 @@ dev = [
     "pytest",
     "pytest-mock",
     "ruff",
+    "types-python-dateutil",
+    "types-requests",
 ]
+
+[project.urls]
+Repository = "https://github.com/reichlab/virus-clade-utils.git"
 
 [project.entry-points."console_scripts"]
 assign_clades = "virus_clade_utils.assign_clades:main"
@@ -59,3 +66,7 @@ lint.extend-select = ["I"]
 
 [tools.setuptools]
 packages = ["virus_clade_utils"]
+
+[tool.mypy]
+ignore_missing_imports = true
+

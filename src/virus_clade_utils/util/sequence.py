@@ -9,10 +9,11 @@ from pathlib import Path
 
 import polars as pl
 import structlog
-import us  # type: ignore
+import us
 from requests import Session
-from virus_clade_utils.util.reference import get_s3_object_url
-from virus_clade_utils.util.session import check_response, get_session
+
+from virus_clade_utils.util.reference import _get_s3_object_url
+from virus_clade_utils.util.session import _check_response, _get_session
 
 logger = structlog.get_logger()
 
@@ -27,7 +28,7 @@ def get_covid_genome_data(released_since_date: str, base_url: str, filename: str
     headers = {
         "Accept": "application/zip",
     }
-    session = get_session()
+    session = _get_session()
     session.headers.update(headers)
 
     # TODO: this might be a better as an item in the forthcoming config file
@@ -49,7 +50,7 @@ def get_covid_genome_data(released_since_date: str, base_url: str, filename: str
 
     start = time.perf_counter()
     response = session.post(base_url, data=json.dumps(request_body), timeout=(300, 300))
-    check_response(response)
+    _check_response(response)
 
     # Originally tried saving the NCBI package via a stream call and iter_content (to prevent potential
     # memory issues that can arise when download large files). However, ran into an intermittent error:
@@ -75,7 +76,7 @@ def download_covid_genome_metadata(
     else:
         as_of_datetime = datetime.strptime(as_of, "%Y-%m-%d").replace(tzinfo=timezone.utc)
 
-    (s3_version, s3_url) = get_s3_object_url(bucket, key, as_of_datetime)
+    (s3_version, s3_url) = _get_s3_object_url(bucket, key, as_of_datetime)
     filename = data_path / f"{as_of_datetime.date().strftime('%Y-%m-%d')}-{Path(key).name}"
 
     if use_existing and filename.exists():
@@ -108,6 +109,28 @@ def get_covid_genome_metadata(metadata_path: Path, num_rows: int | None = None) 
         ).lazy()
 
     return metadata
+
+
+def _get_ncov_metadata(
+    url_ncov_metadata: str,
+    session: Session | None = None,
+) -> dict:
+    """Return metadata emitted by the Nextstrain ncov pipeline."""
+    if not session:
+        session = _get_session(retry=False)
+
+    response = session.get(url_ncov_metadata)
+    if not response.ok:
+        logger.warn(
+            "Failed to retrieve ncov metadata",
+            status_code=response.status_code,
+            response_text=response.text,
+            request=response.request.url,
+            request_body=response.request.body,
+        )
+        return {}
+
+    return response.json()
 
 
 def filter_covid_genome_metadata(metadata: pl.LazyFrame, cols: list = []) -> pl.LazyFrame:
@@ -161,7 +184,7 @@ def get_clade_counts(filtered_metadata: pl.LazyFrame) -> pl.LazyFrame:
     return counts
 
 
-def unzip_sequence_package(filename: str, data_path: str):
+def _unzip_sequence_package(filename: Path, data_path: Path):
     """Unzip the downloaded virus genome data package."""
     with zipfile.ZipFile(filename, "r") as package_zip:
         zip_contents = package_zip.namelist()
@@ -188,6 +211,6 @@ def parse_sequence_assignments(df_assignments: pl.DataFrame) -> pl.DataFrame:
         raise ValueError("Clade assignment data contains duplicate sequence. Stopping assignment process.")
 
     # add the parsed sequence number as a new column
-    df_assignments = df_assignments.insert_column(1, seq)
+    df_assignments = df_assignments.insert_column(1, seq)  # type: ignore
 
     return df_assignments
