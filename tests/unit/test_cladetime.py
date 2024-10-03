@@ -7,7 +7,6 @@ import pytest
 from freezegun import freeze_time
 from virus_clade_utils.cladetime import CladeTime
 from virus_clade_utils.exceptions import CladeTimeInvalidDateError
-from virus_clade_utils.util.config import Config
 
 
 def test_cladetime_no_args():
@@ -82,17 +81,9 @@ def test_cladetime_invalid_date(bad_date):
         ),
     ],
 )
-def test_cladetime_urls(s3_setup, sequence_as_of, expected_content):
+def test_cladetime_urls(s3_setup, test_config, sequence_as_of, expected_content):
     s3_client, bucket_name, s3_object_keys = s3_setup
 
-    # FIXME: perhaps the test_config that works with the mock aws setup
-    # should be a fixture.
-    test_config = Config(datetime.now(), datetime.now())
-    test_config.nextstrain_min_seq_date = datetime(2023, 1, 1).replace(tzinfo=timezone.utc)
-    test_config.nextstrain_ncov_bucket = "versioned-bucket"
-    test_config.nextstrain_genome_metadata_key = s3_object_keys["sequence_metadata"]
-    test_config.nextstrain_genome_sequence_key = s3_object_keys["sequence"]
-    test_config.nextstrain_ncov_metadata_key = s3_object_keys["ncov_metadata"]
     mock = MagicMock(return_value=test_config, name="CladeTime._get_config_mock")
 
     with patch("virus_clade_utils.cladetime.CladeTime._get_config", mock):
@@ -118,3 +109,20 @@ def test_cladetime_ncov_metadata():
 
     ct.url_ncov_metadata = "https://httpstat.us/504"
     assert ct.ncov_metadata == {}
+
+
+@pytest.mark.skip("Need moto fixup to test S3 URLs")
+def test_cladetime_sequence_metadata(test_config):
+    mock = MagicMock(return_value=test_config, name="CladeTime._get_config_mock")
+    with patch("virus_clade_utils.cladetime.CladeTime._get_config", mock):
+        ct = CladeTime()
+    assert isinstance(ct.sequence_metadata)
+
+
+def test_cladetime_sequence_metadata_no_url(test_config):
+    mock = MagicMock(return_value=test_config, name="CladeTime._get_config_mock")
+    with patch("virus_clade_utils.cladetime.CladeTime._get_config", mock):
+        ct = CladeTime()
+    ct.url_sequence_metadata = None
+    # if there's no metadata url, sequence metadata should be an empty LazyFrame
+    assert ct.sequence_metadata.collect().shape == (0, 0)

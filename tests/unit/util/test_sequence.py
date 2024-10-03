@@ -54,6 +54,19 @@ def test_get_covid_genome_metadata(test_file_path, metadata_file):
     assert expected_cols.issubset(metadata_cols)
 
 
+@pytest.mark.parametrize("metadata_file", ["metadata.tsv.zst", "metadata.tsv.xz"])
+def test_get_covid_genome_metadata_url(s3_setup, test_file_path, metadata_file):
+    """
+    Test get_covid_genome_metadata when used with an S3 URL instead of a local file.
+    Needs additional research into moto and S3 url access.
+    """
+    s3_client, bucket_name, s3_object_keys = s3_setup
+
+    url = f"https://{bucket_name}.s3.amazonaws.com/data/object-key/{metadata_file}"
+    metadata = get_covid_genome_metadata(metadata_url=url)
+    assert isinstance(metadata, pl.LazyFrame)
+
+
 @pytest.mark.parametrize(
     "as_of, filename",
     [
