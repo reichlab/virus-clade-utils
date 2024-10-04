@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 import polars as pl
 import structlog
 
-from virus_clade_utils.exceptions import CladeTimeInvalidDateError
+from virus_clade_utils.exceptions import CladeTimeInvalidDateError, CladeTimeInvalidURLError
 from virus_clade_utils.util.config import Config
 from virus_clade_utils.util.reference import _get_s3_object_url
 from virus_clade_utils.util.sequence import _get_ncov_metadata, get_covid_genome_metadata
@@ -103,7 +103,7 @@ class CladeTime:
             sequence_metadata = get_covid_genome_metadata(metadata_url=self.url_sequence_metadata)
             return sequence_metadata
         else:
-            sequence_metadata = pl.LazyFrame()
+            raise CladeTimeInvalidURLError("CladeTime is missing url_sequence_metadata")
         return sequence_metadata
 
     def __repr__(self):

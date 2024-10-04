@@ -6,7 +6,7 @@ import dateutil.tz
 import pytest
 from freezegun import freeze_time
 from virus_clade_utils.cladetime import CladeTime
-from virus_clade_utils.exceptions import CladeTimeInvalidDateError
+from virus_clade_utils.exceptions import CladeTimeInvalidDateError, CladeTimeInvalidURLError
 
 
 def test_cladetime_no_args():
@@ -124,5 +124,6 @@ def test_cladetime_sequence_metadata_no_url(test_config):
     with patch("virus_clade_utils.cladetime.CladeTime._get_config", mock):
         ct = CladeTime()
     ct.url_sequence_metadata = None
-    # if there's no metadata url, sequence metadata should be an empty LazyFrame
-    assert ct.sequence_metadata.collect().shape == (0, 0)
+
+    with pytest.raises(CladeTimeInvalidURLError):
+        ct.sequence_metadata
