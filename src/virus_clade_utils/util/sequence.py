@@ -174,14 +174,13 @@ def filter_covid_genome_metadata(metadata: pl.LazyFrame, cols: list = []) -> pl.
             "host",
         ]
 
-    # There are some other odd divisions in the data, but these are 50 states and DC
+    # There are some other odd divisions in the data, but these are 50 states, DC and PR
     states = [state.name for state in us.states.STATES]
     states.extend(["Washington DC", "Puerto Rico"])
 
     # Filter dataset and do some general tidying
     filtered_metadata = (
-        metadata.cast({"date": pl.Date}, strict=False)
-        .select(cols)
+        metadata.select(cols)
         .filter(
             pl.col("country") == "USA",
             pl.col("division").is_in(states),
@@ -189,6 +188,7 @@ def filter_covid_genome_metadata(metadata: pl.LazyFrame, cols: list = []) -> pl.
             pl.col("host") == "Homo sapiens",
         )
         .rename({"clade_nextstrain": "clade", "division": "location"})
+        .cast({"date": pl.Date}, strict=False)
     )
 
     return filtered_metadata
