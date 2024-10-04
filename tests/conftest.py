@@ -1,8 +1,11 @@
+from datetime import datetime, timezone
+
 import boto3
 import pytest
 import requests
 from freezegun import freeze_time
 from moto import mock_aws
+from virus_clade_utils.util.config import Config
 
 
 @pytest.fixture
@@ -34,6 +37,19 @@ def s3_setup(s3_object_keys):
         s3_client = boto3.client("s3", region_name="us-east-1")
         s3_client.create_bucket(Bucket=bucket_name)
         s3_client.put_bucket_versioning(Bucket=bucket_name, VersioningConfiguration={"Status": "Enabled"})
+        s3_client.put_bucket_cors(
+            Bucket=bucket_name,
+            CORSConfiguration={
+                "CORSRules": [
+                    {
+                        "AllowedMethods": ["GET"],
+                        "AllowedOrigins": ["https://*"],
+                        "AllowedHeaders": ["*"],
+                        "MaxAgeSeconds": 3000,
+                    }
+                ]
+            },
+        )
 
         for file, object_key in s3_object_keys.items():
             # Upload multiple versions of the object
@@ -55,3 +71,19 @@ def s3_setup(s3_object_keys):
                     )
 
         yield s3_client, bucket_name, s3_object_keys
+
+
+@pytest.fixture
+def test_config(s3_setup):
+    """
+    Return a Config object for use with the s3_setup fixture.
+    """
+    s3_client, bucket_name, s3_object_keys = s3_setup
+    test_config = Config(datetime.now(), datetime.now())
+    test_config.nextstrain_min_seq_date = datetime(2023, 1, 1).replace(tzinfo=timezone.utc)
+    test_config.nextstrain_ncov_bucket = "versioned-bucket"
+    test_config.nextstrain_genome_metadata_key = s3_object_keys["sequence_metadata"]
+    test_config.nextstrain_genome_sequence_key = s3_object_keys["sequence"]
+    test_config.nextstrain_ncov_metadata_key = s3_object_keys["ncov_metadata"]
+
+    return test_config

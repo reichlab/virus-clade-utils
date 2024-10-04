@@ -37,13 +37,44 @@ In [1]: from virus_clade_utils.cladetime import CladeTime
 
 In [2]: ct = CladeTime()
 
-# URL for the corresponding Nextstrain Sars-Cov-2 sequence metadata
-In [3]: ct.url_sequence_metadata
-Out[3]: 'https://nextstrain-data.s3.amazonaws.com/files/ncov/open/metadata.tsv.zst?versionId=VJomXHLN2L9aqvS9Ax_LJ4ecr5ZsFFhE'
+# Return a Polars LazyFrame with the sequence metadata.
+In [4]: import polars as pl
 
-# Metadata from the pipeline that produced the above file
-In [4]: ct.ncov_metadata
-Out[4]:
+In [5]: lf = ct.sequence_metadata
+
+# From there, you can use Polars to manipulate the data as needed
+In [6]: filtered_sequence_metadata = (
+    lf
+    .select(["country", "division", "date", "host", "clade_nextstrain"])
+    .rename({"clade_nextstrain": "clade", "division": "location"})
+    .filter(
+        pl.col("country") == "USA",
+        pl.col("host") == "Homo sapiens"
+    )
+).collect()
+
+In [7]: filtered_sequence_metadata.head()
+Out[7]:
+shape: (5, 5)
+┌─────────┬──────────┬────────────┬──────────────┬───────┐
+│ country ┆ location ┆ date       ┆ host         ┆ clade │
+│ ---     ┆ ---      ┆ ---        ┆ ---          ┆ ---   │
+│ str     ┆ str      ┆ str        ┆ str          ┆ str   │
+╞═════════╪══════════╪════════════╪══════════════╪═══════╡
+│ USA     ┆ Alabama  ┆ 2022-07-07 ┆ Homo sapiens ┆ 22A   │
+│ USA     ┆ Arizona  ┆ 2022-07-02 ┆ Homo sapiens ┆ 22B   │
+│ USA     ┆ Arizona  ┆ 2022-07-19 ┆ Homo sapiens ┆ 22B   │
+│ USA     ┆ Arizona  ┆ 2022-07-15 ┆ Homo sapiens ┆ 22B   │
+│ USA     ┆ Arizona  ┆ 2022-07-20 ┆ Homo sapiens ┆ 22B   │
+└─────────┴──────────┴────────────┴──────────────┴───────┘
+
+# Pandas users can create a Pandas dataframe with sequence metadata
+
+In [8]: pandas = lf.collect().to_pandas()
+
+# Metadata from the pipeline that produced the above sequence_data
+In [9]: ct.ncov_metadata
+Out[9]:
 {'schema_version': 'v1',
  'nextclade_version': 'nextclade 3.8.2',
  'nextclade_dataset_name': 'SARS-CoV-2',
@@ -55,17 +86,17 @@ Out[4]:
  #### Work with point-in-time Nextstrain Sars-Cov-2 sequence metadata and clade assignments
 
  ```python
-In [5]: from virus_clade_utils.cladetime import CladeTime
+In [10]: from virus_clade_utils.cladetime import CladeTime
 
-In [6]: ct = CladeTime(sequence_as_of="2024-08-31", tree_as_of="2024-08-01")
+In [11]: ct = CladeTime(sequence_as_of="2024-08-31", tree_as_of="2024-08-01")
 
 # URL for the corresponding Nextstrain Sars-Cov-2 sequence metadata as it existing on 2024-08-31
-In [7]: ct.url_sequence_metadata
-Out[7]: 'https://nextstrain-data.s3.amazonaws.com/files/ncov/open/metadata.tsv.zst?versionId=1SZMfjWxXjNy530F6L7MfyflUCbue.JD'
+In [12]: ct.url_sequence_metadata
+Out[12]: 'https://nextstrain-data.s3.amazonaws.com/files/ncov/open/metadata.tsv.zst?versionId=1SZMfjWxXjNy530F6L7MfyflUCbue.JD'
 
 # Metadata for the pipeline run that produced the above file
-In [8]: ct.ncov_metadata
-Out[8]: {'schema_version': 'v1',
+In [13]: ct.ncov_metadata
+Out[13]: {'schema_version': 'v1',
  'nextclade_version': 'nextclade 3.8.2',
  'nextclade_dataset_name': 'SARS-CoV-2',
  'nextclade_dataset_version': '2024-07-17--12-57-03Z',

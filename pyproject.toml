@@ -59,6 +59,9 @@ filterwarnings = [
     "ignore::DeprecationWarning",
     'ignore:polars found a filename',
 ]
+testpaths = [
+    "tests",
+]
 
 [tool.ruff]
 line-length = 120

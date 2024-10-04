@@ -98,15 +98,41 @@ def download_covid_genome_metadata(
     return filename
 
 
-def get_covid_genome_metadata(metadata_path: Path, num_rows: int | None = None) -> pl.LazyFrame:
-    """Read GenBank genome metadata into a Polars LazyFrame."""
+def get_covid_genome_metadata(
+    metadata_path: Path | None = None, metadata_url: str | None = None, num_rows: int | None = None
+) -> pl.LazyFrame:
+    """
+    Read GenBank genome metadata into a Polars LazyFrame.
 
-    if (compression_type := metadata_path.suffix) in [".tsv", ".zst"]:
-        metadata = pl.scan_csv(metadata_path, separator="\t", n_rows=num_rows)
-    elif compression_type == ".xz":
-        metadata = pl.read_csv(
-            lzma.open(metadata_path), separator="\t", n_rows=num_rows, infer_schema_length=100000
-        ).lazy()
+    Parameters
+    ----------
+    metadata_path : Path | None
+        Path to location of a NextStrain GenBank genome metadata file.
+        Cannot be used with metadata_url.
+    metadata_url: str | None
+        URL to a NextStrain GenBank genome metadata file.
+        Cannot be used with metadata_path.
+    num_rows : int | None, default = None
+        The number of genome metadata rows to request.
+        When not supplied, request all rows.
+    """
+
+    path_flag = metadata_path is not None
+    url_flag = metadata_url is not None
+
+    assert path_flag + url_flag == 1, "Specify metadata_path or metadata_url, but not both."
+
+    if metadata_url:
+        metadata = pl.scan_csv(metadata_url, separator="\t", n_rows=num_rows)
+        return metadata
+
+    if metadata_path:
+        if (compression_type := metadata_path.suffix) in [".tsv", ".zst"]:
+            metadata = pl.scan_csv(metadata_path, separator="\t", n_rows=num_rows)
+        elif compression_type == ".xz":
+            metadata = pl.read_csv(
+                lzma.open(metadata_path), separator="\t", n_rows=num_rows, infer_schema_length=100000
+            ).lazy()
 
     return metadata
 

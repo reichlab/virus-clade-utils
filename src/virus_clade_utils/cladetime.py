@@ -2,12 +2,13 @@
 
 from datetime import datetime, timezone
 
+import polars as pl
 import structlog
 
-from virus_clade_utils.exceptions import CladeTimeInvalidDateError
+from virus_clade_utils.exceptions import CladeTimeInvalidDateError, CladeTimeInvalidURLError
 from virus_clade_utils.util.config import Config
 from virus_clade_utils.util.reference import _get_s3_object_url
-from virus_clade_utils.util.sequence import _get_ncov_metadata
+from virus_clade_utils.util.sequence import _get_ncov_metadata, get_covid_genome_metadata
 
 logger = structlog.get_logger()
 
@@ -25,6 +26,8 @@ class CladeTime:
     ncov_metadata : dict
         Metadata for the Nextstrain ncov pipeline that generated the sequence and
         sequence metadata that correspond to the sequence_as_of date.
+    metadata_metadata : pl.LazyFrame
+        A Polars lazyframe reference to url_sequence_metadata.
     tree_as_of : datetime
         Use the NextStrain reference tree that was available as of this
         date and time (UTC).
@@ -58,6 +61,7 @@ class CladeTime:
         self.sequence_as_of = self._validate_as_of_date(sequence_as_of)
         self.tree_as_of = self._validate_as_of_date(tree_as_of)
         self._ncov_metadata = {}
+        self._sequence_metadata = pl.LazyFrame()
 
         self.url_sequence = _get_s3_object_url(
             self._config.nextstrain_ncov_bucket, self._config.nextstrain_genome_sequence_key, self.sequence_as_of
@@ -87,6 +91,20 @@ class CladeTime:
         else:
             metadata = {}
         return metadata
+
+    @property
+    def sequence_metadata(self):
+        return self._sequence_metadata
+
+    @sequence_metadata.getter
+    def sequence_metadata(self) -> pl.LazyFrame:
+        """Set the sequence_metadata attribute."""
+        if self.url_sequence_metadata:
+            sequence_metadata = get_covid_genome_metadata(metadata_url=self.url_sequence_metadata)
+            return sequence_metadata
+        else:
+            raise CladeTimeInvalidURLError("CladeTime is missing url_sequence_metadata")
+        return sequence_metadata
 
     def __repr__(self):
         return f"CladeTime(sequence_as_of={self.sequence_as_of}, tree_as_of={self.tree_as_of})"
