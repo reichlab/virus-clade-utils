@@ -5,14 +5,8 @@ import structlog
 
 def setup_logging():
     shared_processors = [
-        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.TimeStamper(fmt="%Y-%m-%d %H:%M:%S"),
         structlog.processors.add_log_level,
-        structlog.processors.CallsiteParameterAdder(
-            [
-                structlog.processors.CallsiteParameter.FILENAME,
-                structlog.processors.CallsiteParameter.LINENO,
-            ]
-        ),
     ]
 
     if sys.stderr.isatty():
