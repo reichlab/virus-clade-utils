@@ -29,7 +29,7 @@ intersphinx_disabled_domains = ["std"]
 templates_path = ["_templates"]
 
 # These folders are copied to the documentation's HTML output
-html_static_path = ["../_static"]
+html_static_path = ["_static"]
 html_theme_options = {
     "announcement": """
         <a style=\"text-decoration: none; color: white;\"
