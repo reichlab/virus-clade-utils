@@ -41,6 +41,12 @@ dev = [
     "types-python-dateutil",
     "types-requests",
 ]
+docs = [
+    "myst-parser",
+    "sphinx",
+    "sphinx-copybutton",
+    "sphinxext-opengraph",
+    ]
 
 [project.urls]
 Repository = "https://github.com/reichlab/cladetime.git"
