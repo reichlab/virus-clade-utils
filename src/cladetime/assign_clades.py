@@ -8,9 +8,9 @@ import polars as pl
 import rich_click as click
 import structlog
 
-from virus_clade_utils.util.config import Config
-from virus_clade_utils.util.reference import get_nextclade_dataset
-from virus_clade_utils.util.sequence import (
+from cladetime.util.config import Config
+from cladetime.util.reference import get_nextclade_dataset
+from cladetime.util.sequence import (
     _unzip_sequence_package,
     get_covid_genome_data,
     parse_sequence_assignments,
@@ -121,7 +121,7 @@ def merge_metadata(config: Config) -> pl.DataFrame:
         )
 
     # TBD: include only the columns we need
-    # https://github.com/reichlab/virus-clade-utils/issues/11
+    # https://github.com/reichlab/cladetime/issues/11
     if len(config.assignment_file_columns) > 0:
         joined = joined.select(config.assignment_file_columns)
 

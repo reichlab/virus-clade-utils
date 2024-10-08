@@ -7,15 +7,15 @@ import polars as pl
 import structlog
 from cloudpathlib import AnyPath
 
-from virus_clade_utils.util.config import Config
-from virus_clade_utils.util.sequence import (
+from cladetime.util.config import Config
+from cladetime.util.sequence import (
     download_covid_genome_metadata,
     filter_covid_genome_metadata,
     get_clade_counts,
     get_covid_genome_metadata,
 )
-from virus_clade_utils.util.session import _get_session
-from virus_clade_utils.util.timing import time_function
+from cladetime.util.session import _get_session
+from cladetime.util.timing import time_function
 
 logger = structlog.get_logger()
 

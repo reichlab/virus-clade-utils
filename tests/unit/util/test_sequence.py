@@ -4,7 +4,7 @@ from pathlib import Path
 
 import polars as pl
 import pytest
-from virus_clade_utils.util.sequence import (
+from cladetime.util.sequence import (
     download_covid_genome_metadata,
     filter_covid_genome_metadata,
     get_covid_genome_metadata,

@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from unittest import mock
 
-from virus_clade_utils.util.reference import _get_s3_object_url, get_nextclade_dataset
+from cladetime.util.reference import _get_s3_object_url, get_nextclade_dataset
 
 
 @mock.patch("subprocess.run")

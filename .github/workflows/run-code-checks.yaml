@@ -13,14 +13,14 @@ jobs:
 
       - name: Build Docker image 🐳
         run: |
-          docker build -t virus-clade-utils .
+          docker build -t cladetime .
 
       - name: lint 🧹
         run: |
-          docker run --entrypoint /bin/bash virus-clade-utils \
+          docker run --entrypoint /bin/bash cladetime \
           -c "ruff check"
 
       - name: run unit tests 🧪
         run: |
-          docker run --entrypoint /bin/bash virus-clade-utils \
+          docker run --entrypoint /bin/bash cladetime \
           -c "pytest -k unit"

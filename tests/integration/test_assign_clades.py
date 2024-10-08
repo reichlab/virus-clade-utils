@@ -1,8 +1,8 @@
 import datetime
 
 import click
+from cladetime.assign_clades import main
 from click.testing import CliRunner
-from virus_clade_utils.assign_clades import main
 
 
 # test below runs the entire pipeline

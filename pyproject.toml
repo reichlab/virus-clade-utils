@@ -1,6 +1,6 @@
 [project]
-name = "virus-clade-utils"
-version = "0.1.0"
+name = "cladetime"
+version = "0.2.0"
 description = "Assign clades to viral genome sequences at a point in time."
 authors = [
     {name = "Evan Ray", email="elray@umass.edu"},
@@ -43,11 +43,11 @@ dev = [
 ]
 
 [project.urls]
-Repository = "https://github.com/reichlab/virus-clade-utils.git"
+Repository = "https://github.com/reichlab/cladetime.git"
 
 [project.entry-points."console_scripts"]
-assign_clades = "virus_clade_utils.assign_clades:main"
-clade_list = "virus_clade_utils.get_clade_list:main"
+assign_clades = "cladetime.assign_clades:main"
+clade_list = "cladetime.get_clade_list:main"
 
 [build-system]
 requires = ["setuptools>=64", "wheel"]
@@ -68,7 +68,7 @@ line-length = 120
 lint.extend-select = ["I"]
 
 [tools.setuptools]
-packages = ["virus_clade_utils"]
+packages = ["cladetime"]
 
 [tool.mypy]
 ignore_missing_imports = true

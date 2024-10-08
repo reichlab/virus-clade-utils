@@ -5,10 +5,10 @@ from datetime import datetime, timezone
 import polars as pl
 import structlog
 
-from virus_clade_utils.exceptions import CladeTimeInvalidDateError, CladeTimeInvalidURLError
-from virus_clade_utils.util.config import Config
-from virus_clade_utils.util.reference import _get_s3_object_url
-from virus_clade_utils.util.sequence import _get_ncov_metadata, get_covid_genome_metadata
+from cladetime.exceptions import CladeTimeInvalidDateError, CladeTimeInvalidURLError
+from cladetime.util.config import Config
+from cladetime.util.reference import _get_s3_object_url
+from cladetime.util.sequence import _get_ncov_metadata, get_covid_genome_metadata
 
 logger = structlog.get_logger()
 
