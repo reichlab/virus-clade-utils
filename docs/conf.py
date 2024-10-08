@@ -3,7 +3,7 @@
 # -- Project information
 
 project = "Cladetime"
-copyright = "2024, Reich Lab @ The University of Massachusetts, Amherst"
+copyright = "2024, Reich Lab @ The University of Massachusetts Amherst"
 author = "Reich Lab"
 
 release = "0.1"
