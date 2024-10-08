@@ -46,25 +46,24 @@ myst_enable_extensions = [
 # -- Options for HTML output
 
 html_theme = "sphinx_book_theme"
-html_logo = "images/LOGO-hubverse-withtext.png"
-html_favicon = "images/hubverse-favicon.png"
-html_title = "Hubverse"
+# html_logo = "images/LOGO-hubverse-withtext.png"
+html_favicon = "images/reichlab.png"
+html_title = "Cladetime"
 html_theme_options = {
-    "home_page_in_toc": False,
-    # "github_url": "https://github.com/hubverse-org/hubDocs",
-    "repository_url": "https://github.com/hubverse-org/hubDocs",
+    "home_page_in_toc": True,
+    "repository_url": "https://github.com/reichlab/cladetime",
     "repository_branch": "main",
     "path_to_docs": "docs",
     "use_repository_button": True,
     # "use_edit_page_button": True,
     "use_issues_button": True,
-    "use_sidenotes": True,
+    # "use_sidenotes": True,
     # "navbar_persistent": ["theme-switcher", "navbar-icon-links"],
 }
 
-html_js_files = [
-    "js/custom.js",
-]
+# html_js_files = [
+#     "js/custom.js",
+# ]
 
 # -- Options for EPUB output
 epub_show_urls = "footnote"
