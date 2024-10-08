@@ -30,6 +30,17 @@ templates_path = ["_templates"]
 
 # These folders are copied to the documentation's HTML output
 html_static_path = ["../_static"]
+html_theme_options = {
+    "announcement": """
+        <a style=\"text-decoration: none; color: white;\"
+           href=\"https://reichlab.io">
+           <img src=\"/en/latest/_static/reichlab.png\"/> This is an announcement!
+        </a>
+    """,
+    "sidebar_hide_name": True,
+    "light_logo": "banner.svg",
+    "dark_logo": "dark-logo.svg",
+}
 
 # from https://myst-parser.readthedocs.io/en/latest/syntax/optional.html
 myst_enable_extensions = [
@@ -43,23 +54,23 @@ myst_enable_extensions = [
     "attrs_inline",
 ]
 
+# Open Graph metadata
+ogp_title = "cladetime documentation"
+ogp_type = "website"
+ogp_social_cards = {"image": "images/reichlab.png", "line_color": "#F09837"}
+ogp_description = "cladetime is a user-friendly library for accessing Sars-Cov-2 clade data from Nextstrain."
+
+# Test code blocks only when explicitly specified
+doctest_test_doctest_blocks = ""
+
 # -- Options for HTML output
 
-html_theme = "sphinx_book_theme"
-# html_logo = "images/LOGO-hubverse-withtext.png"
+# The theme to use for HTML and HTML Help pages.  See the documentation for
+# a list of builtin themes.
+html_theme = "furo"
 html_favicon = "images/reichlab.png"
 html_title = "Cladetime"
-html_theme_options = {
-    "home_page_in_toc": True,
-    "repository_url": "https://github.com/reichlab/cladetime",
-    "repository_branch": "main",
-    "path_to_docs": "docs",
-    "use_repository_button": True,
-    # "use_edit_page_button": True,
-    "use_issues_button": True,
-    # "use_sidenotes": True,
-    # "navbar_persistent": ["theme-switcher", "navbar-icon-links"],
-}
+html_theme_options = {}
 
 # html_js_files = [
 #     "js/custom.js",

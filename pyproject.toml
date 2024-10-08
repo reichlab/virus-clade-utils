@@ -42,6 +42,8 @@ dev = [
     "types-requests",
 ]
 docs = [
+    "furo",
+    "matplotlib",
     "myst-parser",
     "sphinx",
     "sphinx-copybutton",
