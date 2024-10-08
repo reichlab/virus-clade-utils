@@ -11,9 +11,9 @@ import structlog
 import us
 from requests import Session
 
-from virus_clade_utils.util.reference import _get_s3_object_url
-from virus_clade_utils.util.session import _check_response, _get_session
-from virus_clade_utils.util.timing import time_function
+from cladetime.util.reference import _get_s3_object_url
+from cladetime.util.session import _check_response, _get_session
+from cladetime.util.timing import time_function
 
 logger = structlog.get_logger()
 

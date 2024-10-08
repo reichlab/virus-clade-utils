@@ -3,9 +3,9 @@ from datetime import datetime, timezone
 import boto3
 import pytest
 import requests
+from cladetime.util.config import Config
 from freezegun import freeze_time
 from moto import mock_aws
-from virus_clade_utils.util.config import Config
 
 
 @pytest.fixture

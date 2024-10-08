@@ -2,6 +2,10 @@ import sys
 
 import structlog
 
+from cladetime.cladetime import CladeTime
+
+__all__ = ["CladeTime"]
+
 
 def setup_logging():
     shared_processors = [

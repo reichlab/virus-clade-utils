@@ -1,13 +1,13 @@
-# Virus Clade Utils
+# Cladetime
 
-Virus Clade Utils is a wrapper around existing tools for downloading and working with virus genome sequences:
+Cladetime is a wrapper around existing tools for downloading and working with virus genome sequences:
 
 * The [NCBI Datasets API](https://www.ncbi.nlm.nih.gov/datasets/docs/v2/reference-docs/rest-api/) provided by the National Institutes of Healh.
 * The [Nexclade command line interface (CLI)](https://docs.nextstrain.org/projects/nextclade/en/stable/user/nextclade-cli/index.html) provided by [Nextstrain](https://docs.nextstrain.org/en/latest/).
 
 This package was developed to provide data required for the [COVID-19 Variant Nowcast hub](https://github.com/reichlab/variant-nowcast-hub), where modelers and teams forecast the daily proportions of COVID-19 variants in US states.
 
-We are releasing `virus-clade-utils` as a standalone package for use by others who may find the functionality useful.
+We are releasing `cladetime` as a standalone package for use by others who may find the functionality useful.
 
 
 ## Usage
@@ -24,7 +24,7 @@ This library contains two types of components:
 To use the interactive `CladeTime` object, install this package:
 
 ```bash
-    pip install git+https://github.com/reichlab/virus-clade-utils.git
+    pip install git+https://github.com/reichlab/cladetime.git
 ```
 
 Once the package is installed, you can instantiate a `CladeTime` object in a Python console
@@ -33,7 +33,7 @@ Once the package is installed, you can instantiate a `CladeTime` object in a Pyt
 #### Work with the latest Nextstrain Sars-Cov-2 sequence metadata and clade assignments
 
 ```python
-In [1]: from virus_clade_utils.cladetime import CladeTime
+In [1]: from cladetime.cladetime import CladeTime
 
 In [2]: ct = CladeTime()
 
@@ -86,7 +86,7 @@ Out[9]:
  #### Work with point-in-time Nextstrain Sars-Cov-2 sequence metadata and clade assignments
 
  ```python
-In [10]: from virus_clade_utils.cladetime import CladeTime
+In [10]: from cladetime import CladeTime
 
 In [11]: ct = CladeTime(sequence_as_of="2024-08-31", tree_as_of="2024-08-01")
 
@@ -118,12 +118,12 @@ Use the directions below to run the pipeline in a Docker container.
 1. Clone this repository and change into the high-level directory:
 
     ```bash
-    cd virus-clade-utils
+    cd cladetime
     ```
 2. Build the Docker image:
 
     ```bash
-    docker build --platform=linux/amd64 -t virus-clade-utils .
+    docker build --platform=linux/amd64 -t cladetime .
     ```
 
 3. To run the target data pipeline, passing in required arguments:
@@ -131,7 +131,7 @@ Use the directions below to run the pipeline in a Docker container.
     ```bash
     docker run --platform linux/amd64 \
     -v $(pwd)/data:/home/docker-user/ \
-    virus-clade-utils \
+    cladetime \
     --sequence-released-since-date 2024-07-16 \
     --reference-tree-date 2024-07-16 \
     --data-dir /home/docker-user
@@ -147,7 +147,7 @@ The clade assignments will now be in the local directory that was mounted to the
 1. Enter the container's bash shell:
 
     ```bash
-    docker run --platform linux/amd64 -it --entrypoint bash virus-clade-utils
+    docker run --platform linux/amd64 -it --entrypoint bash cladetime
     ```
 
 2. Once you're in the shell of the container:
@@ -165,7 +165,7 @@ To run the test suite in the Docker container (built above):
 1. Enter the container's bash shell:
 
     ```bash
-    docker run --platform linux/amd64 -it --entrypoint bash virus-clade-utils
+    docker run --platform linux/amd64 -it --entrypoint bash cladetime
     ```
 
 2. Once you're in the shell of the container, run the tests:
@@ -199,7 +199,7 @@ Follow the directions below to set this project up on your local machine.
 1. Clone this repository and change into the project's high-level directory:
 
     ```bash
-    cd virus-clade-utils
+    cd cladetime
     ```
 
 2. Create a Python virtual environment:

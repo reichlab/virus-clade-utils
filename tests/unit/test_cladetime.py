@@ -4,9 +4,9 @@ from urllib.parse import parse_qs, urlparse
 
 import dateutil.tz
 import pytest
+from cladetime.cladetime import CladeTime
+from cladetime.exceptions import CladeTimeInvalidDateError, CladeTimeInvalidURLError
 from freezegun import freeze_time
-from virus_clade_utils.cladetime import CladeTime
-from virus_clade_utils.exceptions import CladeTimeInvalidDateError, CladeTimeInvalidURLError
 
 
 def test_cladetime_no_args():
@@ -86,7 +86,7 @@ def test_cladetime_urls(s3_setup, test_config, sequence_as_of, expected_content)
 
     mock = MagicMock(return_value=test_config, name="CladeTime._get_config_mock")
 
-    with patch("virus_clade_utils.cladetime.CladeTime._get_config", mock):
+    with patch("cladetime.CladeTime._get_config", mock):
         with freeze_time("2024-09-02 00:00:00"):
             ct = CladeTime(sequence_as_of=sequence_as_of)
             for url in [ct.url_sequence, ct.url_sequence_metadata]:
@@ -114,14 +114,14 @@ def test_cladetime_ncov_metadata():
 @pytest.mark.skip("Need moto fixup to test S3 URLs")
 def test_cladetime_sequence_metadata(test_config):
     mock = MagicMock(return_value=test_config, name="CladeTime._get_config_mock")
-    with patch("virus_clade_utils.cladetime.CladeTime._get_config", mock):
+    with patch("cladetime.CladeTime._get_config", mock):
         ct = CladeTime()
     assert isinstance(ct.sequence_metadata)
 
 
 def test_cladetime_sequence_metadata_no_url(test_config):
     mock = MagicMock(return_value=test_config, name="CladeTime._get_config_mock")
-    with patch("virus_clade_utils.cladetime.CladeTime._get_config", mock):
+    with patch("cladetime.CladeTime._get_config", mock):
         ct = CladeTime()
     ct.url_sequence_metadata = None
 

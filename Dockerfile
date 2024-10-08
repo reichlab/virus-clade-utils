@@ -10,7 +10,7 @@
 FROM nextstrain/nextclade:3.8.2
 
 FROM python:3.12-slim-bookworm
-COPY --from=0 /usr/bin/nextclade /opt/src/virus_clade_utils/bin/
+COPY --from=0 /usr/bin/nextclade /opt/src/cladetime/bin/
 
 # create a user to run the app
 ARG USERNAME=docker-user
@@ -23,10 +23,10 @@ RUN chown -R docker-user:docker-user /opt/
 ENV PYTHONPATH "${PYTHONPATH}:/opt/"
 
 # Install the dataformat CLI tool
-WORKDIR /opt/src/virus_clade_utils/bin/
+WORKDIR /opt/src/cladetime/bin/
 ADD https://ftp.ncbi.nlm.nih.gov/pub/datasets/command-line/v2/linux-amd64/dataformat ./dataformat
 RUN chmod +x ./dataformat
-ENV PATH "${PATH}:/opt/src/virus_clade_utils/bin/"
+ENV PATH "${PATH}:/opt/src/cladetime/bin/"
 
 # Install Python dependencies
 WORKDIR /opt/
@@ -47,7 +47,7 @@ RUN uv pip install --system polars-lts-cpu --no-cache-dir
 
 USER $USERNAME
 
-COPY src/virus_clade_utils/ ./src/virus_clade_utils/
+COPY src/cladetime/ ./src/cladetime/
 COPY tests/ ./tests/
 
 ENTRYPOINT ["assign_clades"]
