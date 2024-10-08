@@ -2,7 +2,6 @@
 
 import json
 import lzma
-import time
 import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
@@ -14,10 +13,12 @@ from requests import Session
 
 from virus_clade_utils.util.reference import _get_s3_object_url
 from virus_clade_utils.util.session import _check_response, _get_session
+from virus_clade_utils.util.timing import time_function
 
 logger = structlog.get_logger()
 
 
+@time_function
 def get_covid_genome_data(released_since_date: str, base_url: str, filename: str):
     """
     Download genome data package from NCBI.
@@ -48,7 +49,6 @@ def get_covid_genome_data(released_since_date: str, base_url: str, filename: str
 
     logger.info("NCBI API call starting", released_since_date=released_since_date)
 
-    start = time.perf_counter()
     response = session.post(base_url, data=json.dumps(request_body), timeout=(300, 300))
     _check_response(response)
 
@@ -60,12 +60,8 @@ def get_covid_genome_data(released_since_date: str, base_url: str, filename: str
     with open(filename, "wb") as f:
         f.write(response.content)
 
-    end = time.perf_counter()
-    elapsed = end - start
 
-    logger.info("NCBI API call completed", elapsed=elapsed)
-
-
+@time_function
 def download_covid_genome_metadata(
     session: Session, bucket: str, key: str, data_path: Path, as_of: str | None = None, use_existing: bool = False
 ) -> Path:
@@ -83,17 +79,12 @@ def download_covid_genome_metadata(
         logger.info("using existing genome metadata file", metadata_file=str(filename))
         return filename
 
-    start = time.perf_counter()
     logger.info("starting genome metadata download", source=s3_url, destination=str(filename))
     with session.get(s3_url, stream=True) as result:
         result.raise_for_status()
         with open(filename, "wb") as f:
             for chunk in result.iter_content(chunk_size=None):
                 f.write(chunk)
-
-    end = time.perf_counter()
-    elapsed = end - start
-    logger.info("genome metadata downloaded", elapsed=elapsed)
 
     return filename
 
@@ -174,14 +165,13 @@ def filter_covid_genome_metadata(metadata: pl.LazyFrame, cols: list = []) -> pl.
             "host",
         ]
 
-    # There are some other odd divisions in the data, but these are 50 states and DC
+    # There are some other odd divisions in the data, but these are 50 states, DC and PR
     states = [state.name for state in us.states.STATES]
     states.extend(["Washington DC", "Puerto Rico"])
 
     # Filter dataset and do some general tidying
     filtered_metadata = (
-        metadata.cast({"date": pl.Date}, strict=False)
-        .select(cols)
+        metadata.select(cols)
         .filter(
             pl.col("country") == "USA",
             pl.col("division").is_in(states),
@@ -189,6 +179,7 @@ def filter_covid_genome_metadata(metadata: pl.LazyFrame, cols: list = []) -> pl.
             pl.col("host") == "Homo sapiens",
         )
         .rename({"clade_nextstrain": "clade", "division": "location"})
+        .cast({"date": pl.Date}, strict=False)
     )
 
     return filtered_metadata

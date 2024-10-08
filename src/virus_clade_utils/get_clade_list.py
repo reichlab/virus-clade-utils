@@ -1,7 +1,6 @@
 """Get a list of SARS-CoV-2 clades."""
 
 import os
-import time
 from datetime import timedelta
 
 import polars as pl
@@ -16,13 +15,14 @@ from virus_clade_utils.util.sequence import (
     get_covid_genome_metadata,
 )
 from virus_clade_utils.util.session import _get_session
+from virus_clade_utils.util.timing import time_function
 
 logger = structlog.get_logger()
 
 
+@time_function
 def get_clades(clade_counts: pl.LazyFrame, threshold: float, threshold_weeks: int, max_clades: int) -> list[str]:
     """Get a list of clades to forecast based."""
-    start = time.perf_counter()
 
     # based on the data's most recent date, get the week start three weeks ago (not including this week)
     max_day = clade_counts.select(pl.max("date")).collect().item()
@@ -59,10 +59,6 @@ def get_clades(clade_counts: pl.LazyFrame, threshold: float, threshold_weeks: in
         )
 
     variants = high_prev_variants.get_column("clade").to_list()[:max_clades]
-
-    end = time.perf_counter()
-    elapsed = end - start
-    logger.info("generated clade list", elapsed=elapsed)
 
     return variants
 
