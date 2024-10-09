@@ -5,7 +5,7 @@ from urllib.parse import parse_qs, urlparse
 import dateutil.tz
 import pytest
 from cladetime.cladetime import CladeTime
-from cladetime.exceptions import CladeTimeInvalidDateError, CladeTimeInvalidURLError
+from cladetime.exceptions import CladeTimeFutureDateWarning, CladeTimeInvalidDateError, CladeTimeInvalidURLError
 from freezegun import freeze_time
 
 
@@ -36,13 +36,31 @@ def test_cladetime_no_args():
             datetime(2024, 9, 30, 18, 24, 59, 655398),
             None,
             datetime(2024, 9, 30, 18, 24, 59, tzinfo=timezone.utc),
-            datetime(2025, 7, 13, 16, 21, 34, tzinfo=timezone.utc),
+            datetime(2024, 9, 30, 18, 24, 59, tzinfo=timezone.utc),
         ),
         (
             datetime(2024, 2, 22, 22, 22, 22, 222222, tzinfo=dateutil.tz.gettz("US/Eastern")),
             datetime(2024, 2, 22, tzinfo=dateutil.tz.gettz("US/Eastern")),
             datetime(2024, 2, 22, 22, 22, 22, tzinfo=timezone.utc),
             datetime(2024, 2, 22, tzinfo=timezone.utc),
+        ),
+        (
+            "2023-12-21",
+            None,
+            datetime(2023, 12, 21, tzinfo=timezone.utc),
+            datetime(2023, 12, 21, tzinfo=timezone.utc),
+        ),
+        (
+            "2063-12-21",
+            None,
+            datetime(2025, 7, 13, 16, 21, 34, tzinfo=timezone.utc),
+            datetime(2025, 7, 13, 16, 21, 34, tzinfo=timezone.utc),
+        ),
+        (
+            "2063-12-21",
+            "2074-07-13",
+            datetime(2025, 7, 13, 16, 21, 34, tzinfo=timezone.utc),
+            datetime(2025, 7, 13, 16, 21, 34, tzinfo=timezone.utc),
         ),
     ],
 )
@@ -54,10 +72,19 @@ def test_cladetime_as_of_dates(sequence_as_of, tree_as_of, expected_sequence_as_
     assert ct.tree_as_of == expected_tree_as_of
 
 
-@pytest.mark.parametrize("bad_date", ["2020-07-13", "2022-12-32", "2063-04-05"])
+@pytest.mark.parametrize("bad_date", ["2020-07-13", "2022-12-32"])
 def test_cladetime_invalid_date(bad_date):
     with pytest.raises(CladeTimeInvalidDateError):
         CladeTime(sequence_as_of=bad_date, tree_as_of=bad_date)
+
+
+def test_cladetime_future_date():
+    with pytest.warns(CladeTimeFutureDateWarning):
+        CladeTime(sequence_as_of="2063-07-13")
+    with pytest.warns(CladeTimeFutureDateWarning):
+        CladeTime(tree_as_of="2063-07-13")
+    with pytest.warns(CladeTimeFutureDateWarning):
+        CladeTime(sequence_as_of="2023-12-31", tree_as_of="2063-07-13")
 
 
 @pytest.mark.parametrize(
