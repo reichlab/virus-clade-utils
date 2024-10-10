@@ -5,7 +5,9 @@ Cladetime
 Installing
 ------------
 
-cladetime can be installed with [pip])(https://pip.pypa.io/): ::
+cladetime can be installed with `pip <https://pip.pypa.io/>`_:
+
+.. code-block:: bash
 
     pip install git+https://github.com/reichlab/cladetime.git
 
@@ -13,7 +15,9 @@ cladetime can be installed with [pip])(https://pip.pypa.io/): ::
 Finding Nextstrain SARS-CoV-2 sequences and sequence metadata
 --------------------------------------------------------------
 
-Cladetime provides a CladeTime class that provides a lightweight interface to nextstrain.org files. ::
+Cladetime provides a CladeTime class that provides a lightweight interface to nextstrain.org files.
+
+.. code-block:: python
 
     from cladetime import CladeTime
 
@@ -42,10 +46,14 @@ Cladetime provides a CladeTime class that provides a lightweight interface to ne
 Working with SARS-CoV-2 sequence metadata
 ------------------------------------------
 
-The CladeTime class also provides a Polars LazyFrame object that points to the Nextstrain's sequence metadata file. This file is in .tsv format and contains information about the sequences, such as their collection date, host, and location.
+The CladeTime class also provides a Polars LazyFrame object that points to the Nextstrain's sequence metadata file.
+This file is in .tsv format and contains information about the sequences, such as their collection date,
+host, and location.
 
-The metadata also includes a clade assignment for each sequence. Nextstrain assigns clades based on a reference tree, and the reference tree varies over time. ::
+The metadata also includes a clade assignment for each sequence. Nextstrain assigns clades based on a reference tree,
+and the reference tree varies over time.
 
+.. code-block:: python
 
     import polars as pl
     from cladetime import CladeTime
