@@ -52,10 +52,12 @@ class CladeTime:
             Use the NextStrain sequences and sequence metadata that were available
             as of this date. Can be a datetime object, a string in the format
             "YYYY-MM-DD", or None (which defaults to the current date and time).
+            CladeTime treats all dates and times as UTC.
         tree_as_of : datetime | str | None, default = now()
             Use the NextStrain reference tree that was available as of this date.
             Can be a datetime object, a string in the format
             "YYYY-MM-DD", or None (which defaults to the sequence_as_of date).
+            CladeTime treats all dates and times as UTC.
         """
 
         self._config = self._get_config()
@@ -87,7 +89,7 @@ class CladeTime:
     def sequence_as_of(self, date) -> None:
         """Set the sequence_as_of attribute."""
         sequence_as_of = self._validate_as_of_date(date)
-        utc_now = datetime.now().replace(tzinfo=timezone.utc)
+        utc_now = datetime.now(timezone.utc)
         if sequence_as_of > utc_now:
             warnings.warn(
                 f"specified sequence_as_of is in the future, defaulting to current time: {utc_now}",
@@ -108,7 +110,7 @@ class CladeTime:
             tree_as_of = self.sequence_as_of
         else:
             tree_as_of = self._validate_as_of_date(date)
-        utc_now = datetime.now().replace(tzinfo=timezone.utc)
+        utc_now = datetime.now(timezone.utc)
         if tree_as_of > utc_now:
             warnings.warn(
                 f"specified tree_as_of is in the future, defaulting to sequence_as_of: {self.sequence_as_of}",
@@ -160,18 +162,22 @@ class CladeTime:
         return config
 
     def _validate_as_of_date(self, as_of: str) -> datetime:
-        """Validate an as_of date (UTC) used to instantiate CladeTime."""
+        """Validate an as_of date used to instantiate CladeTime.
+
+        All dates used to instantiate CladeTime are assigned
+        a datetime tzinfo of UTC.
+        """
         if as_of is None:
-            as_of_date = datetime.now()
+            as_of_date = datetime.now(timezone.utc)
         elif isinstance(as_of, datetime):
-            as_of_date = as_of
+            as_of_date = as_of.replace(tzinfo=timezone.utc)
         elif isinstance(as_of, str):
             try:
-                as_of_date = datetime.strptime(as_of, "%Y-%m-%d")
+                as_of_date = datetime.strptime(as_of, "%Y-%m-%d").replace(tzinfo=timezone.utc)
             except ValueError as e:
                 raise CladeTimeInvalidDateError(f"Invalid date string: {as_of} (should be in YYYY-MM-DD format)") from e
 
-        as_of_date = as_of_date.replace(microsecond=0, tzinfo=timezone.utc)
+        as_of_date = as_of_date.replace(microsecond=0)
         if as_of_date < self._config.nextstrain_min_seq_date:
             raise CladeTimeInvalidDateError(f"Date must be after May 1, 2023: {as_of_date}")
 
