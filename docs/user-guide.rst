@@ -2,15 +2,6 @@ Cladetime
 ===============
 
 
-Installing
-------------
-
-cladetime can be installed with `pip <https://pip.pypa.io/>`_:
-
-.. code-block:: bash
-
-    pip install git+https://github.com/reichlab/cladetime.git
-
 
 Finding Nextstrain SARS-CoV-2 sequences and sequence metadata
 --------------------------------------------------------------
@@ -61,14 +52,41 @@ and the reference tree varies over time.
     ct = CladeTime()
 
     # ct contains a Polars LazyFrame that references the sequence metadata .tsv file on AWS S3
-    lz = ct.sequence_metadata
-    lz
+    lf = ct.sequence_metadata
+    lf
     <LazyFrame at 0x105341190>
 
     # TODO: some polars examples
 
 
-Time Traveling
---------------
+Getting historical SARS-CoV-2 sequence metadata
+------------------------------------------------
 
-omg!
+A CladeTime instance created without parameters will reference the most
+recent data available from Nextstrain.
+
+To access sequence metadata at a specific point in time, pass a date string
+in the format 'YYYY-MM-DD' to the CladeTime constructor. Alternately, you pass
+a Python datetime object. Both will be treated as UTC dates/times.
+
+.. code-block:: python
+
+    from cladetime import CladeTime
+
+    ct = CladeTime(sequence_as_of="2024-08-02")
+
+    # ct operations now reference the version of the sequence metadata
+    # that was available at midnight UTC on August 2, 2024.
+    ct.sequence_metadata \
+        .cast({"date": pl.Date}, strict=False) \
+        .select(pl.max("date")).collect()
+
+    # shape: (1, 1)
+    # ┌────────────┐
+    # │ date       │
+    # │ ---        │
+    # │ date       │
+    # ╞════════════╡
+    # │ 2024-07-23 │
+    # └────────────┘
+
