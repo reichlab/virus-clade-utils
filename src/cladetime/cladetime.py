@@ -86,8 +86,6 @@ class CladeTime:
     @sequence_as_of.setter
     def sequence_as_of(self, date) -> None:
         """Set the sequence_as_of attribute."""
-        if date is None:
-            sequence_as_of = datetime.now()
         sequence_as_of = self._validate_as_of_date(date)
         utc_now = datetime.now().replace(tzinfo=timezone.utc)
         if sequence_as_of > utc_now:
