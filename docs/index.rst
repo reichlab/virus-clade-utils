@@ -13,3 +13,4 @@ Contents
 
    Home <self>
    user-guide
+   reference/index

@@ -1,3 +1,5 @@
+import os
+import sys
 from datetime import date
 
 # Configuration file for the Sphinx documentation builder.
@@ -8,8 +10,15 @@ project = "Cladetime"
 copyright = f"{date.today().year}, Reich Lab @ The University of Massachusetts Amherst"
 author = "Reich Lab"
 
+# Add cladetime location to the path, so we can use autodoc to
+# generate API documentation from docstrings.
+root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, root_path)
+
 release = "0.1"
+# FIXME: get the version dynamically
 version = "0.1.0"
+
 
 # -- General configuration
 
@@ -51,16 +60,16 @@ html_theme_options = {
 }
 
 # Order sidebar content, placing ads in the left sidebar
-html_sidebars = {
-    "**": [
-        "sidebar/brand.html",
-        "sidebar/search.html",
-        "sidebar/scroll-start.html",
-        "sidebar/navigation.html",
-        "sidebar/scroll-end.html",
-        "sidebar/ethical-ads.html",
-    ]
-}
+# html_sidebars = {
+#     "**": [
+#         "sidebar/brand.html",
+#         "sidebar/search.html",
+#         "sidebar/scroll-start.html",
+#         "sidebar/navigation.html",
+#         "sidebar/scroll-end.html",
+#         "sidebar/ethical-ads.html",
+#     ]
+# }
 
 
 # from https://myst-parser.readthedocs.io/en/latest/syntax/optional.html

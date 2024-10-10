@@ -1,0 +1,4 @@
+CladeTime
+==========
+
+.. automodule:: cladetime.CladeTime
