@@ -10,6 +10,7 @@ Contents
 
 .. toctree::
    :titlesonly:
+   :hidden:
 
    Home <self>
    user-guide

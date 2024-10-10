@@ -15,33 +15,14 @@ logger = structlog.get_logger()
 
 
 class CladeTime:
-    """
-    Wrapper around Nextstrain/Nextclade tooling to generate Sars-CoV-2 genome clade assignments
-    and aggregations at a specific point in time. CladeTime operates on Genbank sequences.
+    """Wrapper around Nextstrain Sars-CoV-2 genome sequences, metadata, and clade assignments.
 
-    Attributes
-    ----------
-    sequence_as_of : datetime
-        Use the NextStrain sequences and sequence metadata that were available
-        as of this date and time (UTC).
-    ncov_metadata : dict
-        Metadata for the Nextstrain ncov pipeline that generated the sequence and
-        sequence metadata that correspond to the sequence_as_of date.
-    metadata_metadata : pl.LazyFrame
-        A Polars lazyframe reference to url_sequence_metadata.
-    tree_as_of : datetime
-        Use the NextStrain reference tree that was available as of this
-        date and time (UTC).
-        Can be a datetime object, a string in the format
-        "YYYY-MM-DD", or None (which defaults to the current date and time).
-    url_ncov_metadata: str
-        S3 URL to the Nextstrain ncov metadata file (.json)
-    url_sequence : str
-        S3 URL to the Nextstrain Sars-CoV-2 sequence file (zst-compressed
-        .fasta) that was available at the sequence_as_of.
-    url_sequence_metadata : str
-        S3 URL to the Nextstrain Sars-CoV-2 sequence metadata file
-        (zst-compressed tsv) that was available at the sequence_as_of.
+    :param sequence_as_of Use the NextStrain sequences and sequence metadata
+        that were available as of this date and time (UTC)
+    :type sequence_as_of: datetime
+    :param tree_as_of Use the NextStrain reference tree that was available as
+        of this date and time (UTC).
+    :type tree_as_of: datetime
     """
 
     def __init__(self, sequence_as_of=None, tree_as_of=None):
