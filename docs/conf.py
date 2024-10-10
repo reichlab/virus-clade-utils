@@ -42,13 +42,26 @@ html_theme_options = {
     "announcement": """
         <a style=\"text-decoration: none; color: white;\"
            href=\"https://reichlab.io">
-           <img src=\"/en/latest/_static/reichlab.png\"/> This is an announcement!
+           This is an announcement!
         </a>
     """,
-    "light_logo": "images/reichlab.png",
-    "dark_logo": "images/reichlab.png",
+    "light_logo": "reichlab.png",
+    "dark_logo": "reichlab.png",
     "navigation_with_keys": True,
 }
+
+# Order sidebar content, placing ads in the left sidebar
+html_sidebars = {
+    "**": [
+        "sidebar/brand.html",
+        "sidebar/search.html",
+        "sidebar/scroll-start.html",
+        "sidebar/navigation.html",
+        "sidebar/scroll-end.html",
+        "sidebar/ethical-ads.html",
+    ]
+}
+
 
 # from https://myst-parser.readthedocs.io/en/latest/syntax/optional.html
 myst_enable_extensions = [
