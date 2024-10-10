@@ -17,30 +17,34 @@ logger = structlog.get_logger()
 class CladeTime:
     """Wrapper around Nextstrain Sars-CoV-2 genome sequences, metadata, and clade assignments.
 
-    :param sequence_as_of Use the NextStrain sequences and sequence metadata
-        that were available as of this date and time (UTC)
-    :type sequence_as_of: datetime
-    :param tree_as_of Use the NextStrain reference tree that was available as
-        of this date and time (UTC).
-    :type tree_as_of: datetime
+    The CladeTime class is instantiated with two optional arguments that
+    specify the point in time at which to access Nextstrain sequence
+    data and the reference tree used to assign sequences to clades.
+
+    Parameters
+    ----------
+    sequence_as_of : datetime
+        Use the NextStrain sequences and sequence metadata that were available
+        as of this date and time (UTC)
+    tree_as_of : datetime
+        Use the NextStrain reference tree that was available as of this date
+        and time (UTC)
+
+    Attributes
+    ----------
+    ncov_metadata : dict
+        Metadata for the Nextstrain ncov pipeline that generated the sequence
+        and sequence metadata that correspond to the sequence_as_of date
+    url_sequence : str
+        S3 URL to the Nextstrain Sars-CoV-2 sequence file (zst-compressed
+        .fasta) that was available at the sequence_as_of
+    url_sequence_metadata : str
+        S3 URL to the Nextstrain Sars-CoV-2 sequence metadata file
+        (zst-compressed tsv) that was available at the sequence_as_of
     """
 
     def __init__(self, sequence_as_of=None, tree_as_of=None):
-        """
-        Parameters
-        ----------
-        sequence_as_of : datetime | str | None, default = now()
-            Use the NextStrain sequences and sequence metadata that were available
-            as of this date. Can be a datetime object, a string in the format
-            "YYYY-MM-DD", or None (which defaults to the current date and time).
-            CladeTime treats all dates and times as UTC.
-        tree_as_of : datetime | str | None, default = now()
-            Use the NextStrain reference tree that was available as of this date.
-            Can be a datetime object, a string in the format
-            "YYYY-MM-DD", or None (which defaults to the sequence_as_of date).
-            CladeTime treats all dates and times as UTC.
-        """
-
+        """CladeTime constructor."""
         self._config = self._get_config()
         self.sequence_as_of = sequence_as_of
         self.tree_as_of = tree_as_of

@@ -29,6 +29,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "myst_parser",  # markdown (NOTE: this is NOT mystmd)
     "sphinxext.opengraph",
+    "sphinx.ext.napoleon",
 ]
 
 intersphinx_mapping = {
